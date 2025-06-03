@@ -9,6 +9,7 @@
     "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap src/index.ts",
     "build:tsc": "rm -rf dist && tsc -p tsconfig.build.json",
     "test": "bun test",
+    "test:integration": "INTEGRATION_TEST=true bun test",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

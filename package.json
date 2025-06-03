@@ -1,12 +1,12 @@
 {
   "name": "jira_cli_mcp",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun --watch run index.ts",
-    "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap index.ts",
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap src/index.ts",
     "build:tsc": "rm -rf dist && tsc -p tsconfig.build.json",
     "test": "echo \"No tests yet\"",
     "typecheck": "tsc --noEmit",

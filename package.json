@@ -1,0 +1,30 @@
+{
+  "name": "jira_cli_mcp",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun --watch run index.ts",
+    "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap index.ts",
+    "build:tsc": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "echo \"No tests yet\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check": "bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.2.15",
+    "@types/node": "^22.15.29"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.25.49"
+  }
+}

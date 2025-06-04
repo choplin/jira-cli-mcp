@@ -42,6 +42,7 @@ Add to your `claude_desktop_config.json`:
 ### Option 2: Built Version (Recommended for Production)
 
 1. Build the project:
+
 ```bash
 cd /path/to/jira-cli-mcp
 bun install
@@ -49,6 +50,7 @@ bun run build
 ```
 
 2. Add to config:
+
 ```json
 {
   "mcpServers": {
@@ -63,6 +65,7 @@ bun run build
 ### Option 3: Global Binary
 
 1. Create a binary wrapper:
+
 ```bash
 cd /path/to/jira-cli-mcp
 bun build --compile --target=bun-darwin-arm64 --outfile=jira-cli-mcp src/index.ts
@@ -70,6 +73,7 @@ sudo mv jira-cli-mcp /usr/local/bin/
 ```
 
 2. Add to config:
+
 ```json
 {
   "mcpServers": {
@@ -83,6 +87,7 @@ sudo mv jira-cli-mcp /usr/local/bin/
 ### Configuration Location
 
 The config file is typically located at:
+
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`

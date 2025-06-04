@@ -7,20 +7,25 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 ## Key Features
 
 1. **list_tickets** - Search and list Jira tickets with semantic filters
+
    - Supports JQL queries and semantic parameters (assignedToMe, status, project, etc.)
    - Status enum includes: "open", "in progress", "in review", "done", "closed", "todo", "to do"
 
 2. **get_ticket** - Get detailed ticket information
+
    - Parses ADF (Atlassian Document Format) to Markdown
    - Includes comments with pagination support
 
 3. **update_ticket_description** - Update ticket descriptions
+
    - Accepts Markdown input (converted to ADF by jira-cli)
 
 4. **add_comment** - Add comments to tickets
+
    - Supports rich text formatting via Markdown
 
 5. **assign_to_me** - Assign tickets to current user
+
    - Uses `jira me` command to get current user
 
 6. **move_ticket** - Move tickets between statuses

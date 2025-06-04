@@ -6,6 +6,7 @@ import { listTickets, listTicketsSchema } from "./tools/listTickets.js";
 import { getTicket, getTicketSchema } from "./tools/getTicket.js";
 import { updateTicketDescription, updateTicketDescriptionSchema } from "./tools/updateTicketDescription.js";
 import { addComment, addCommentSchema } from "./tools/addComment.js";
+import { assignToMe, assignToMeSchema } from "./tools/assignToMe.js";
 import { JiraCliError } from "./utils/jiraExecutor.js";
 
 const server = new McpServer({
@@ -158,6 +159,40 @@ server.tool(
   async (params) => {
     try {
       const result = await addComment(params);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: result.message,
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
+    }
+  },
+);
+
+// Assign to me tool
+server.tool(
+  "assign_to_me",
+  {
+    ticketKey: assignToMeSchema.shape.ticketKey,
+  },
+  async (params) => {
+    try {
+      const result = await assignToMe(params);
       
       return {
         content: [

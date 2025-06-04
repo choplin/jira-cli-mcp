@@ -36,7 +36,8 @@ export async function executeJiraCommand(
     });
 
     proc.on("error", (error) => {
-      if ((error as any).code === "ENOENT") {
+      // Node.js spawn errors include a 'code' property
+      if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
         reject(
           new JiraCliError(
             `jira-cli not found at path: ${jiraPath}. Please install jira-cli or set JIRA_CLI_PATH environment variable.`,

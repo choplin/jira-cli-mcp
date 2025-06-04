@@ -28,7 +28,7 @@ describe("jiraExecutor", () => {
         await executeJiraCommand(["version"]);
       } catch (error) {
         expect(error).toBeInstanceOf(JiraCliError);
-        expect((error as JiraCliError).message).toContain("/custom/jira/path");
+        expect((error as Error).message).toContain("/custom/jira/path");
       }
     });
 

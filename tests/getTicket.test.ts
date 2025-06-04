@@ -14,7 +14,21 @@ describe("getTicket", () => {
         key: "TEST-123",
         fields: {
           summary: "Implement user authentication system",
-          description: "Need to implement OAuth2 authentication for the web application",
+          description: {
+            type: "doc",
+            version: 1,
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "text",
+                    text: "Need to implement OAuth2 authentication for the web application"
+                  }
+                ]
+              }
+            ]
+          },
           status: { name: "In Progress" },
           priority: { name: "High" },
           issuetype: { name: "Story" },
@@ -68,6 +82,69 @@ describe("getTicket", () => {
       expect(result.comments).toHaveLength(2);
       expect(result.comments[0]!.author).toBe("Jane Doe");
       expect(result.comments[0]!.body).toBe("Started working on OAuth2 integration");
+    });
+
+    test("should parse ticket with ADF format description", async () => {
+      const mockRawOutput = JSON.stringify({
+        key: "TEST-789",
+        fields: {
+          summary: "Test with ADF description",
+          description: {
+            type: "doc",
+            version: 1,
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "text",
+                    text: "First paragraph of description"
+                  }
+                ]
+              },
+              {
+                type: "paragraph", 
+                content: [
+                  {
+                    type: "text",
+                    text: "Second paragraph with more details"
+                  }
+                ]
+              }
+            ]
+          },
+          status: { name: "In Progress" },
+          priority: { name: "Medium" },
+          issuetype: { name: "Task" },
+          assignee: { displayName: "Test User" },
+          reporter: { displayName: "Reporter User" },
+          created: "2024-01-20T10:00:00.000+0000",
+          updated: "2024-01-20T11:00:00.000+0000",
+          comment: {
+            comments: []
+          }
+        }
+      });
+
+      const mockExecuteJiraCommand = mock(async () => ({
+        stdout: mockRawOutput,
+        stderr: "",
+        exitCode: 0,
+      }));
+
+      mock.module("../src/utils/jiraExecutor", () => ({
+        executeJiraCommand: mockExecuteJiraCommand,
+      }));
+
+      const { getTicket } = await import("../src/tools/getTicket");
+      const result = await getTicket({
+        ticketKey: "TEST-789",
+        comments: 5,
+      });
+
+      expect(result.key).toBe("TEST-789");
+      expect(result.summary).toBe("Test with ADF description");
+      expect(result.description).toBe("First paragraph of description\n\nSecond paragraph with more details");
     });
 
     test("should handle ticket with no description or comments", async () => {

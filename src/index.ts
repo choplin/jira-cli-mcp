@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { listTickets, listTicketsSchema } from "./tools/listTickets.js";
 import { getTicket, getTicketSchema } from "./tools/getTicket.js";
+import { updateTicketDescription, updateTicketDescriptionSchema } from "./tools/updateTicketDescription.js";
 import { JiraCliError } from "./utils/jiraExecutor.js";
 
 const server = new McpServer({
@@ -92,6 +93,41 @@ ${ticket.comments.length > 0
           {
             type: "text",
             text: ticketInfo,
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
+    }
+  },
+);
+
+// Update ticket description tool
+server.tool(
+  "update_ticket_description",
+  {
+    ticketKey: updateTicketDescriptionSchema.shape.ticketKey,
+    description: updateTicketDescriptionSchema.shape.description,
+  },
+  async (params) => {
+    try {
+      const result = await updateTicketDescription(params);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: result.message,
           },
         ],
       };

@@ -11,15 +11,21 @@
     "test": "bun test tests/",
     "test:integration": "INTEGRATION_TEST=true bun test tests/integration/",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "check": "bun run lint && bun run typecheck && bun run test && bun run build"
+    "lint": "biome lint src/",
+    "lint:fix": "biome lint --write src/",
+    "format": "biome format --write src/",
+    "check": "biome check src/",
+    "check:fix": "biome check --write src/",
+    "ci": "bun run check && bun run typecheck && bun test && bun run build",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "^1.2.15",
-    "@types/node": "^22.15.29"
+    "@types/node": "^22.15.29",
+    "lefthook": "^1.11.13"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

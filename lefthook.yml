@@ -1,0 +1,44 @@
+# Lefthook configuration for AgentCave
+# https://github.com/evilmartians/lefthook
+
+# Install hooks with: lefthook install
+# Run manually with: lefthook run pre-commit
+
+pre-commit:
+  parallel: false
+  piped: true
+  skip:
+    - merge
+    - rebase
+  scripts:
+    "remove-trailing-spaces":
+      runner: bash
+
+  commands:
+    biome-check:
+      glob: "**/*.{js,ts,tsx,jsx,json}"
+      run: biome check --write {staged_files}
+      stage_fixed: true
+
+    typecheck:
+      run: bun run typecheck
+
+pre-push:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+  commands:
+    test-all:
+      run: bun test
+
+    build:
+      run: bun run build
+
+commit-msg:
+  skip:
+    - merge
+    - rebase
+  commands:
+    commitlint:
+      run: bunx commitlint --edit $1

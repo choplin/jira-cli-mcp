@@ -1,8 +1,12 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 // Mock JiraCliError class for tests
 class MockJiraCliError extends Error {
-  constructor(message: string, public exitCode: number, public stderr: string) {
+  constructor(
+    message: string,
+    public exitCode: number,
+    public stderr: string,
+  ) {
     super(message);
     this.name = "JiraCliError";
   }
@@ -87,19 +91,20 @@ And supports **markdown** formatting!`;
       }));
 
       const { addComment } = await import("../src/tools/addComment");
-      
+
       await expect(
         addComment({
           ticketKey: "TEST-789",
           comment: "This should fail",
-        })
+        }),
       ).rejects.toThrow("Failed to add comment to TEST-789");
     });
 
     test("should handle non-existent ticket", async () => {
       const mockExecuteJiraCommand = mock(async () => ({
         stdout: "",
-        stderr: "Issue TEST-999 does not exist or you do not have permission to see it.",
+        stderr:
+          "Issue TEST-999 does not exist or you do not have permission to see it.",
         exitCode: 1,
       }));
 
@@ -114,7 +119,7 @@ And supports **markdown** formatting!`;
         addComment({
           ticketKey: "TEST-999",
           comment: "This won't work",
-        })
+        }),
       ).rejects.toThrow("Failed to add comment to TEST-999");
     });
   });

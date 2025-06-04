@@ -1,10 +1,10 @@
-import { describe, expect, test, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { getConfig } from "../src/config";
 
 describe("config", () => {
   beforeEach(() => {
     // Reset environment variables
-    delete process.env.JIRA_CLI_PATH;
+    process.env.JIRA_CLI_PATH = undefined;
   });
 
   test("should return default jira path when no environment variable is set", () => {

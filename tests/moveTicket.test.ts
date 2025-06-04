@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 describe("moveTicket", () => {
   afterEach(() => {
@@ -27,19 +27,18 @@ describe("moveTicket", () => {
           });
         }
         if (args[0] === "issue" && args[1] === "move") {
-          expect(args).toEqual([
-            "issue",
-            "move",
-            "TEST-123",
-            "In Progress",
-          ]);
+          expect(args).toEqual(["issue", "move", "TEST-123", "In Progress"]);
           return Promise.resolve({
             stdout: "✓ Issue TEST-123 has been moved to In Progress",
             stderr: "",
             exitCode: 0,
           });
         }
-        return Promise.resolve({ stdout: "", stderr: "Unknown command", exitCode: 1 });
+        return Promise.resolve({
+          stdout: "",
+          stderr: "Unknown command",
+          exitCode: 1,
+        });
       });
 
       mock.module("../src/utils/jiraExecutor", () => ({
@@ -56,7 +55,9 @@ describe("moveTicket", () => {
       expect(result.ticketKey).toBe("TEST-123");
       expect(result.previousStatus).toBe("Open");
       expect(result.newStatus).toBe("In Progress");
-      expect(result.message).toBe("Successfully moved TEST-123 from Open to In Progress");
+      expect(result.message).toBe(
+        "Successfully moved TEST-123 from Open to In Progress",
+      );
     });
 
     test("should handle failure to get current status", async () => {
@@ -64,7 +65,8 @@ describe("moveTicket", () => {
         if (args[0] === "issue" && args[1] === "list") {
           return Promise.resolve({
             stdout: "",
-            stderr: "Issue does not exist or you do not have permission to see it",
+            stderr:
+              "Issue does not exist or you do not have permission to see it",
             exitCode: 1,
           });
         }
@@ -76,12 +78,12 @@ describe("moveTicket", () => {
       }));
 
       const { moveTicket } = await import("../src/tools/moveTicket");
-      
+
       await expect(
         moveTicket({
           ticketKey: "TEST-999",
           status: "done",
-        })
+        }),
       ).rejects.toThrow("Failed to get current status");
     });
 
@@ -109,12 +111,12 @@ describe("moveTicket", () => {
       }));
 
       const { moveTicket } = await import("../src/tools/moveTicket");
-      
+
       await expect(
         moveTicket({
           ticketKey: "TEST-123",
           status: "open",
-        })
+        }),
       ).rejects.toThrow("Failed to move ticket TEST-123");
     });
 
@@ -143,7 +145,7 @@ describe("moveTicket", () => {
       }));
 
       const { moveTicket } = await import("../src/tools/moveTicket");
-      
+
       const result = await moveTicket({
         ticketKey: "TEST-456",
         status: "in review",

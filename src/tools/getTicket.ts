@@ -1,23 +1,27 @@
 import { z } from "zod";
-import { executeJiraCommand } from "../utils/jiraExecutor.js";
-import type { JiraTicketDetail, JiraComment } from "../utils/types.js";
-import type { 
-  AdfDocument, 
-  AdfNode, 
+import type {
   AdfBlockNode,
-  AdfParagraph,
-  AdfHeading,
-  AdfBulletList,
-  AdfOrderedList,
-  AdfCodeBlock,
   AdfBlockquote,
+  AdfBulletList,
+  AdfCodeBlock,
+  AdfDocument,
+  AdfHeading,
+  AdfMark,
+  AdfNode,
+  AdfOrderedList,
+  AdfParagraph,
   AdfText,
-  AdfMark
 } from "../utils/adf-types.js";
+import { executeJiraCommand } from "../utils/jiraExecutor.js";
+import type { JiraComment, JiraTicketDetail } from "../utils/types.js";
 
 export const getTicketSchema = z.object({
   ticketKey: z.string().describe("Jira ticket key (e.g., PROJ-123)"),
-  comments: z.number().optional().default(5).describe("Number of comments to include"),
+  comments: z
+    .number()
+    .optional()
+    .default(5)
+    .describe("Number of comments to include"),
 });
 
 export type GetTicketParams = z.infer<typeof getTicketSchema>;
@@ -25,7 +29,7 @@ export type GetTicketParams = z.infer<typeof getTicketSchema>;
 // Helper function to convert ADF to plain text
 function convertAdfToText(adf: AdfDocument): string {
   const parts: string[] = [];
-  
+
   function processInlineContent(nodes: AdfNode[]): string {
     return nodes
       .map((node) => {
@@ -52,14 +56,15 @@ function convertAdfToText(adf: AdfDocument): string {
             }
           }
           return text;
-        } else if (node.type === "hardBreak") {
+        }
+        if (node.type === "hardBreak") {
           return "\n";
         }
         return "";
       })
       .join("");
   }
-  
+
   for (const block of adf.content) {
     switch (block.type) {
       case "paragraph": {
@@ -70,7 +75,7 @@ function convertAdfToText(adf: AdfDocument): string {
         }
         break;
       }
-      
+
       case "heading": {
         const heading = block as AdfHeading;
         if (heading.content) {
@@ -80,7 +85,7 @@ function convertAdfToText(adf: AdfDocument): string {
         }
         break;
       }
-      
+
       case "bulletList": {
         const list = block as AdfBulletList;
         const listItems = list.content.map((item) => {
@@ -100,7 +105,7 @@ function convertAdfToText(adf: AdfDocument): string {
         }
         break;
       }
-      
+
       case "orderedList": {
         const list = block as AdfOrderedList;
         const startNum = list.attrs?.start || 1;
@@ -121,7 +126,7 @@ function convertAdfToText(adf: AdfDocument): string {
         }
         break;
       }
-      
+
       case "codeBlock": {
         const codeBlock = block as AdfCodeBlock;
         if (codeBlock.content) {
@@ -133,17 +138,17 @@ function convertAdfToText(adf: AdfDocument): string {
         }
         break;
       }
-      
+
       case "rule":
         parts.push("---");
         break;
-      
+
       case "blockquote": {
         const quote = block as AdfBlockquote;
         const quotedLines = quote.content
           .map((p) => {
             if (p.type === "paragraph" && p.content) {
-              return "> " + processInlineContent(p.content);
+              return `> ${processInlineContent(p.content)}`;
             }
             return "";
           })
@@ -155,7 +160,7 @@ function convertAdfToText(adf: AdfDocument): string {
       }
     }
   }
-  
+
   return parts.join("\n\n");
 }
 
@@ -163,7 +168,7 @@ interface JiraRawResponse {
   key: string;
   fields: {
     summary: string;
-    description?: AdfDocument;  // Jira Cloud API v3 uses ADF format
+    description?: AdfDocument; // Jira Cloud API v3 uses ADF format
     status: {
       name: string;
     };
@@ -193,7 +198,9 @@ interface JiraRawResponse {
   };
 }
 
-export async function getTicket(params: GetTicketParams): Promise<JiraTicketDetail> {
+export async function getTicket(
+  params: GetTicketParams,
+): Promise<JiraTicketDetail> {
   const { ticketKey, comments } = params;
 
   // Build command arguments
@@ -213,7 +220,7 @@ export async function getTicket(params: GetTicketParams): Promise<JiraTicketDeta
   let rawData: JiraRawResponse;
   try {
     rawData = JSON.parse(result.stdout) as JiraRawResponse;
-  } catch (error) {
+  } catch (_error) {
     throw new Error(`Failed to parse jira response: ${result.stdout}`);
   }
 
@@ -236,11 +243,13 @@ export async function getTicket(params: GetTicketParams): Promise<JiraTicketDeta
     created: rawData.fields.created,
     updated: rawData.fields.updated,
     description: descriptionText,
-    comments: rawData.fields.comment.comments.map((comment): JiraComment => ({
-      author: comment.author.displayName,
-      created: comment.created,
-      body: comment.body,
-    })),
+    comments: rawData.fields.comment.comments.map(
+      (comment): JiraComment => ({
+        author: comment.author.displayName,
+        created: comment.created,
+        body: comment.body,
+      }),
+    ),
   };
 
   return ticket;

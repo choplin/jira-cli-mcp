@@ -8,7 +8,7 @@ export interface AdfDocument {
 }
 
 // Base node type
-export type AdfNode = 
+export type AdfNode =
   | AdfParagraph
   | AdfHeading
   | AdfBulletList
@@ -169,7 +169,7 @@ export interface AdfMark {
   attrs?: Record<string, unknown>;
 }
 
-export type AdfMarkType = 
+export type AdfMarkType =
   | "strong"
   | "em"
   | "code"
@@ -202,7 +202,7 @@ export interface AdfSubSupMark extends AdfMark {
 }
 
 // Helper type unions
-export type AdfBlockNode = 
+export type AdfBlockNode =
   | AdfParagraph
   | AdfHeading
   | AdfBulletList
@@ -213,7 +213,7 @@ export type AdfBlockNode =
   | AdfMediaSingle
   | AdfTable;
 
-export type AdfInlineNode = 
+export type AdfInlineNode =
   | AdfText
   | AdfHardBreak
   | AdfEmoji

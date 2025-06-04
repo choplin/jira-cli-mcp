@@ -37,7 +37,12 @@ export async function executeJiraCommand(
 
     proc.on("error", (error) => {
       // Node.js spawn errors include a 'code' property
-      if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      if (
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
         reject(
           new JiraCliError(
             `jira-cli not found at path: ${jiraPath}. Please install jira-cli or set JIRA_CLI_PATH environment variable.`,
@@ -79,7 +84,7 @@ export async function executeJiraCommandJson<T>(args: string[]): Promise<T> {
 
   try {
     return JSON.parse(result.stdout) as T;
-  } catch (error) {
+  } catch (_error) {
     // If JSON parsing fails, throw error with the actual output
     throw new Error(`Failed to parse jira output as JSON: ${result.stdout}`);
   }

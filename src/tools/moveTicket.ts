@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { executeJiraCommand } from "../utils/jiraExecutor.js";
-import { JIRA_STATUS_VALUES, JIRA_STATUS_MAP } from "../utils/types.js";
+import { JIRA_STATUS_MAP, JIRA_STATUS_VALUES } from "../utils/types.js";
 
 export const moveTicketSchema = z.object({
   ticketKey: z.string().describe("Jira ticket key (e.g., PROJ-123)"),
-  status: z.enum(JIRA_STATUS_VALUES).describe("Target status to move the ticket to"),
+  status: z
+    .enum(JIRA_STATUS_VALUES)
+    .describe("Target status to move the ticket to"),
 });
 
 export type MoveTicketParams = z.infer<typeof moveTicketSchema>;
@@ -38,35 +40,30 @@ export async function moveTicket(
   ]);
 
   if (viewResult.exitCode !== 0) {
-    throw new Error(`Failed to get current status for ${ticketKey}: ${viewResult.stderr}`);
+    throw new Error(
+      `Failed to get current status for ${ticketKey}: ${viewResult.stderr}`,
+    );
   }
 
   // Parse the output - format is "KEY\tStatus"
   const outputParts = viewResult.stdout.trim().split("\t");
   const currentStatus = outputParts[1] || outputParts[0] || "Unknown"; // Handle both "Status" and "KEY\tStatus" formats
+  const moveResult = await executeJiraCommand([
+    "issue",
+    "move",
+    ticketKey,
+    targetStatus,
+  ]);
 
-  // Move the ticket to the new status
-  try {
-    const moveResult = await executeJiraCommand([
-      "issue",
-      "move",
-      ticketKey,
-      targetStatus,
-    ]);
-
-    if (moveResult.exitCode !== 0) {
-      throw new Error(`Failed to move ticket ${ticketKey}: ${moveResult.stderr}`);
-    }
-
-    return {
-      success: true,
-      ticketKey,
-      previousStatus: currentStatus,
-      newStatus: targetStatus,
-      message: `Successfully moved ${ticketKey} from ${currentStatus} to ${targetStatus}`,
-    };
-  } catch (error) {
-    // Re-throw the error as is
-    throw error;
+  if (moveResult.exitCode !== 0) {
+    throw new Error(`Failed to move ticket ${ticketKey}: ${moveResult.stderr}`);
   }
+
+  return {
+    success: true,
+    ticketKey,
+    previousStatus: currentStatus,
+    newStatus: targetStatus,
+    message: `Successfully moved ${ticketKey} from ${currentStatus} to ${targetStatus}`,
+  };
 }

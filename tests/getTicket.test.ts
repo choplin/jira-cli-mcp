@@ -1,5 +1,4 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
-
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 describe("getTicket", () => {
   afterEach(() => {
@@ -23,11 +22,11 @@ describe("getTicket", () => {
                 content: [
                   {
                     type: "text",
-                    text: "Need to implement OAuth2 authentication for the web application"
-                  }
-                ]
-              }
-            ]
+                    text: "Need to implement OAuth2 authentication for the web application",
+                  },
+                ],
+              },
+            ],
           },
           status: { name: "In Progress" },
           priority: { name: "High" },
@@ -41,16 +40,16 @@ describe("getTicket", () => {
               {
                 author: { displayName: "Jane Doe" },
                 created: "2024-01-15T15:45:00.000+0000",
-                body: "Started working on OAuth2 integration"
+                body: "Started working on OAuth2 integration",
               },
               {
                 author: { displayName: "John Smith" },
                 created: "2024-01-16T09:15:00.000+0000",
-                body: "Please prioritize Google OAuth provider first"
-              }
-            ]
-          }
-        }
+                body: "Please prioritize Google OAuth provider first",
+              },
+            ],
+          },
+        },
       });
 
       const mockExecuteJiraCommand = mock(async () => ({
@@ -71,7 +70,9 @@ describe("getTicket", () => {
 
       expect(result.key).toBe("TEST-123");
       expect(result.summary).toBe("Implement user authentication system");
-      expect(result.description).toBe("Need to implement OAuth2 authentication for the web application");
+      expect(result.description).toBe(
+        "Need to implement OAuth2 authentication for the web application",
+      );
       expect(result.status).toBe("In Progress");
       expect(result.priority).toBe("High");
       expect(result.type).toBe("Story");
@@ -80,8 +81,10 @@ describe("getTicket", () => {
       expect(result.created).toBe("2024-01-15T10:30:00.000+0000");
       expect(result.updated).toBe("2024-01-16T14:20:00.000+0000");
       expect(result.comments).toHaveLength(2);
-      expect(result.comments[0]!.author).toBe("Jane Doe");
-      expect(result.comments[0]!.body).toBe("Started working on OAuth2 integration");
+      expect(result.comments[0]?.author).toBe("Jane Doe");
+      expect(result.comments[0]?.body).toBe(
+        "Started working on OAuth2 integration",
+      );
     });
 
     test("should parse ticket with ADF format description", async () => {
@@ -98,20 +101,20 @@ describe("getTicket", () => {
                 content: [
                   {
                     type: "text",
-                    text: "First paragraph of description"
-                  }
-                ]
+                    text: "First paragraph of description",
+                  },
+                ],
               },
               {
-                type: "paragraph", 
+                type: "paragraph",
                 content: [
                   {
                     type: "text",
-                    text: "Second paragraph with more details"
-                  }
-                ]
-              }
-            ]
+                    text: "Second paragraph with more details",
+                  },
+                ],
+              },
+            ],
           },
           status: { name: "In Progress" },
           priority: { name: "Medium" },
@@ -121,9 +124,9 @@ describe("getTicket", () => {
           created: "2024-01-20T10:00:00.000+0000",
           updated: "2024-01-20T11:00:00.000+0000",
           comment: {
-            comments: []
-          }
-        }
+            comments: [],
+          },
+        },
       });
 
       const mockExecuteJiraCommand = mock(async () => ({
@@ -144,7 +147,9 @@ describe("getTicket", () => {
 
       expect(result.key).toBe("TEST-789");
       expect(result.summary).toBe("Test with ADF description");
-      expect(result.description).toBe("First paragraph of description\n\nSecond paragraph with more details");
+      expect(result.description).toBe(
+        "First paragraph of description\n\nSecond paragraph with more details",
+      );
     });
 
     test("should handle ticket with no description or comments", async () => {
@@ -161,9 +166,9 @@ describe("getTicket", () => {
           created: "2024-01-10T08:00:00.000+0000",
           updated: "2024-01-10T08:00:00.000+0000",
           comment: {
-            comments: []
-          }
-        }
+            comments: [],
+          },
+        },
       });
 
       const mockExecuteJiraCommand = mock(async () => ({
@@ -192,7 +197,8 @@ describe("getTicket", () => {
     test("should handle jira command failure", async () => {
       const mockExecuteJiraCommand = mock(async () => ({
         stdout: "",
-        stderr: "Issue TEST-999 does not exist or you do not have permission to see it.",
+        stderr:
+          "Issue TEST-999 does not exist or you do not have permission to see it.",
         exitCode: 1,
       }));
 
@@ -201,11 +207,12 @@ describe("getTicket", () => {
       }));
 
       const { getTicket } = await import("../src/tools/getTicket");
-      await expect(getTicket({
-        ticketKey: "TEST-999",
-        comments: 3,
-      })).rejects.toThrow("Failed to get ticket TEST-999");
+      await expect(
+        getTicket({
+          ticketKey: "TEST-999",
+          comments: 3,
+        }),
+      ).rejects.toThrow("Failed to get ticket TEST-999");
     });
   });
-
 });

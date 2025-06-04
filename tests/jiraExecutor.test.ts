@@ -1,10 +1,9 @@
-import { describe, expect, test, beforeEach, afterEach, mock } from "bun:test";
-
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 
 describe("jiraExecutor", () => {
   beforeEach(() => {
     // Reset environment variables
-    delete process.env.JIRA_CLI_PATH;
+    process.env.JIRA_CLI_PATH = undefined;
   });
 
   afterEach(() => {
@@ -21,9 +20,11 @@ describe("jiraExecutor", () => {
     test("should respect JIRA_CLI_PATH environment variable", async () => {
       // This test verifies the path is used, not that it works
       process.env.JIRA_CLI_PATH = "/custom/jira/path";
-      
-      const { executeJiraCommand, JiraCliError } = await import("../src/utils/jiraExecutor");
-      
+
+      const { executeJiraCommand, JiraCliError } = await import(
+        "../src/utils/jiraExecutor"
+      );
+
       try {
         await executeJiraCommand(["version"]);
       } catch (error) {
@@ -35,11 +36,10 @@ describe("jiraExecutor", () => {
     test("should parse JSON output when executeJiraCommandJson succeeds", async () => {
       // This test just verifies the JSON parsing logic, not the actual command execution
       const mockJsonOutput = '{"key": "TEST-123", "summary": "Test issue"}';
-      
+
       // Test JSON parsing directly
       const parsed = JSON.parse(mockJsonOutput);
       expect(parsed).toEqual({ key: "TEST-123", summary: "Test issue" });
     });
   });
-
 });

@@ -7,7 +7,9 @@ export const updateTicketDescriptionSchema = z.object({
   description: z.string().describe("New description content for the ticket"),
 });
 
-export type UpdateTicketDescriptionParams = z.infer<typeof updateTicketDescriptionSchema>;
+export type UpdateTicketDescriptionParams = z.infer<
+  typeof updateTicketDescriptionSchema
+>;
 
 export interface UpdateTicketDescriptionResult {
   success: boolean;
@@ -21,22 +23,23 @@ export async function updateTicketDescription(
   const { ticketKey, description } = params;
 
   // Build command arguments
-  const args = ["issue", "edit", ticketKey, "--body", description, "--no-input"];
+  const args = [
+    "issue",
+    "edit",
+    ticketKey,
+    "--body",
+    description,
+    "--no-input",
+  ];
+  const result = await executeJiraCommand(args);
 
-  try {
-    const result = await executeJiraCommand(args);
-
-    if (result.exitCode !== 0) {
-      throw new Error(`Failed to update ticket ${ticketKey}: ${result.stderr}`);
-    }
-
-    return {
-      success: true,
-      ticketKey,
-      message: `Successfully updated description for ${ticketKey}`,
-    };
-  } catch (error) {
-    // Re-throw the error as is
-    throw error;
+  if (result.exitCode !== 0) {
+    throw new Error(`Failed to update ticket ${ticketKey}: ${result.stderr}`);
   }
+
+  return {
+    success: true,
+    ticketKey,
+    message: `Successfully updated description for ${ticketKey}`,
+  };
 }

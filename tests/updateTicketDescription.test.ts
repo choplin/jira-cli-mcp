@@ -1,8 +1,12 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 // Mock JiraCliError class for tests
 class MockJiraCliError extends Error {
-  constructor(message: string, public exitCode: number, public stderr: string) {
+  constructor(
+    message: string,
+    public exitCode: number,
+    public stderr: string,
+  ) {
     super(message);
     this.name = "JiraCliError";
   }
@@ -36,7 +40,9 @@ describe("updateTicketDescription", () => {
         executeJiraCommand: mockExecuteJiraCommand,
       }));
 
-      const { updateTicketDescription } = await import("../src/tools/updateTicketDescription");
+      const { updateTicketDescription } = await import(
+        "../src/tools/updateTicketDescription"
+      );
       const result = await updateTicketDescription({
         ticketKey: "TEST-123",
         description: "This is the new description",
@@ -44,7 +50,9 @@ describe("updateTicketDescription", () => {
 
       expect(result.success).toBe(true);
       expect(result.ticketKey).toBe("TEST-123");
-      expect(result.message).toBe("Successfully updated description for TEST-123");
+      expect(result.message).toBe(
+        "Successfully updated description for TEST-123",
+      );
     });
 
     test("should handle multiline descriptions", async () => {
@@ -69,7 +77,9 @@ This is a multi-line description.
         executeJiraCommand: mockExecuteJiraCommand,
       }));
 
-      const { updateTicketDescription } = await import("../src/tools/updateTicketDescription");
+      const { updateTicketDescription } = await import(
+        "../src/tools/updateTicketDescription"
+      );
       const result = await updateTicketDescription({
         ticketKey: "TEST-456",
         description: multilineDescription,
@@ -91,20 +101,23 @@ This is a multi-line description.
         JiraCliError: MockJiraCliError,
       }));
 
-      const { updateTicketDescription } = await import("../src/tools/updateTicketDescription");
-      
+      const { updateTicketDescription } = await import(
+        "../src/tools/updateTicketDescription"
+      );
+
       await expect(
         updateTicketDescription({
           ticketKey: "TEST-789",
           description: "New description",
-        })
+        }),
       ).rejects.toThrow("Failed to update ticket TEST-789");
     });
 
     test("should handle non-existent ticket", async () => {
       const mockExecuteJiraCommand = mock(async () => ({
         stdout: "",
-        stderr: "Issue TEST-999 does not exist or you do not have permission to see it.",
+        stderr:
+          "Issue TEST-999 does not exist or you do not have permission to see it.",
         exitCode: 1,
       }));
 
@@ -113,13 +126,15 @@ This is a multi-line description.
         JiraCliError: MockJiraCliError,
       }));
 
-      const { updateTicketDescription } = await import("../src/tools/updateTicketDescription");
+      const { updateTicketDescription } = await import(
+        "../src/tools/updateTicketDescription"
+      );
 
       await expect(
         updateTicketDescription({
           ticketKey: "TEST-999",
           description: "This won't work",
-        })
+        }),
       ).rejects.toThrow("Failed to update ticket TEST-999");
     });
   });

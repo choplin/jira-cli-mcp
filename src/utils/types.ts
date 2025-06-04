@@ -1,15 +1,23 @@
 // Common status values used across the application
-export const JIRA_STATUS_VALUES = ["open", "in progress", "in review", "done", "closed", "todo", "to do"] as const;
-export type JiraStatusValue = typeof JIRA_STATUS_VALUES[number];
+export const JIRA_STATUS_VALUES = [
+  "open",
+  "in progress",
+  "in review",
+  "done",
+  "closed",
+  "todo",
+  "to do",
+] as const;
+export type JiraStatusValue = (typeof JIRA_STATUS_VALUES)[number];
 
 // Map from lowercase enum values to Jira status names
 export const JIRA_STATUS_MAP: Record<JiraStatusValue, string> = {
-  "open": "Open",
+  open: "Open",
   "in progress": "In Progress",
   "in review": "In Review",
-  "done": "Done",
-  "closed": "Closed",
-  "todo": "To Do",
+  done: "Done",
+  closed: "Closed",
+  todo: "To Do",
   "to do": "To Do",
 };
 

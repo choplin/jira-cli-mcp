@@ -21,21 +21,15 @@ export async function addComment(
 
   // Build command arguments
   const args = ["issue", "comment", "add", ticketKey, comment, "--no-input"];
+  const result = await executeJiraCommand(args);
 
-  try {
-    const result = await executeJiraCommand(args);
-
-    if (result.exitCode !== 0) {
-      throw new Error(`Failed to add comment to ${ticketKey}: ${result.stderr}`);
-    }
-
-    return {
-      success: true,
-      ticketKey,
-      message: `Successfully added comment to ${ticketKey}`,
-    };
-  } catch (error) {
-    // Re-throw the error as is
-    throw error;
+  if (result.exitCode !== 0) {
+    throw new Error(`Failed to add comment to ${ticketKey}: ${result.stderr}`);
   }
+
+  return {
+    success: true,
+    ticketKey,
+    message: `Successfully added comment to ${ticketKey}`,
+  };
 }

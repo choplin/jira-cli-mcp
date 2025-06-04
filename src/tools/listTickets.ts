@@ -1,19 +1,34 @@
 import { z } from "zod";
 import { executeJiraCommand } from "../utils/jiraExecutor.js";
 import type { JiraTicket } from "../utils/types.js";
-import { JIRA_STATUS_VALUES, JIRA_STATUS_MAP } from "../utils/types.js";
+import { JIRA_STATUS_MAP, JIRA_STATUS_VALUES } from "../utils/types.js";
 
 export const listTicketsSchema = z.object({
   jql: z.string().optional().describe("Raw JQL query (advanced users only)"),
   limit: z.number().default(20).describe("Maximum number of tickets to return"),
   // Semantic filters
-  assignedToMe: z.boolean().optional().describe("Show only tickets assigned to me"),
+  assignedToMe: z
+    .boolean()
+    .optional()
+    .describe("Show only tickets assigned to me"),
   unassigned: z.boolean().optional().describe("Show only unassigned tickets"),
   status: z.enum(JIRA_STATUS_VALUES).optional().describe("Filter by status"),
-  project: z.string().optional().describe("Filter by project key (e.g., 'PROJ')"),
-  createdRecently: z.boolean().optional().describe("Show tickets created in the last 7 days"),
-  updatedRecently: z.boolean().optional().describe("Show tickets updated in the last 7 days"),
-  orderBy: z.enum(["created", "updated", "priority"]).optional().describe("Sort tickets by field"),
+  project: z
+    .string()
+    .optional()
+    .describe("Filter by project key (e.g., 'PROJ')"),
+  createdRecently: z
+    .boolean()
+    .optional()
+    .describe("Show tickets created in the last 7 days"),
+  updatedRecently: z
+    .boolean()
+    .optional()
+    .describe("Show tickets updated in the last 7 days"),
+  orderBy: z
+    .enum(["created", "updated", "priority"])
+    .optional()
+    .describe("Sort tickets by field"),
   orderDirection: z.enum(["asc", "desc"]).optional().describe("Sort direction"),
 });
 
@@ -70,7 +85,9 @@ function buildJQLFromParams(params: ListTicketsParams): string | undefined {
   return jql;
 }
 
-export async function listTickets(params: Partial<ListTicketsParams> = {}): Promise<{
+export async function listTickets(
+  params: Partial<ListTicketsParams> = {},
+): Promise<{
   tickets: JiraTicket[];
 }> {
   // Parse params with schema to apply defaults
@@ -115,7 +132,7 @@ export async function listTickets(params: Partial<ListTicketsParams> = {}): Prom
 
   const tickets: JiraTicket[] = lines.map((line) => {
     // jira-cli output is tab-separated in plain mode, but may have multiple tabs
-    const columns = line.split("\t").filter(col => col.trim() !== "");
+    const columns = line.split("\t").filter((col) => col.trim() !== "");
 
     // Expected columns: key, summary, status, priority, type, assignee
     // But actual output may have empty columns, so we need to be flexible

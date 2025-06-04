@@ -1,5 +1,4 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
-
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 describe("listTickets", () => {
   afterEach(() => {
@@ -36,7 +35,7 @@ ABC-12347	Add validation for user input fields		Open	Low	Task	Jane Doe`;
       expect(Array.isArray(result.tickets)).toBe(true);
       expect(result.tickets).toHaveLength(3);
 
-      const ticket = result.tickets[0]!;
+      const ticket = result.tickets[0] as (typeof result.tickets)[0];
       expect(ticket.key).toBe("ABC-12345");
       expect(ticket.summary).toBe("Implement authentication service");
       expect(ticket.status).toBe("Open");
@@ -49,7 +48,7 @@ ABC-12347	Add validation for user input fields		Open	Low	Task	Jane Doe`;
       // Recorded output for empty results
       const mockExecuteJiraCommand = mock(async () => ({
         stdout: "",
-        stderr: "✗ No result found for given query in project \"TEST\"",
+        stderr: '✗ No result found for given query in project "TEST"',
         exitCode: 1,
       }));
 
@@ -97,7 +96,7 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         const jqlIndex = args.indexOf("--jql");
         expect(jqlIndex).toBeGreaterThan(-1);
         expect(args[jqlIndex + 1]).toBe("assignee = currentUser()");
-        
+
         return {
           stdout: "TEST-123\tTest Issue\tOpen\tHigh\tTask\tJohn Smith",
           stderr: "",
@@ -122,7 +121,7 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         const jqlIndex = args.indexOf("--jql");
         expect(jqlIndex).toBeGreaterThan(-1);
         expect(args[jqlIndex + 1]).toBe('status = "In Progress"');
-        
+
         return {
           stdout: "TEST-456\tAnother Issue\tIn Progress\tMedium\tBug\tJane Doe",
           stderr: "",
@@ -138,7 +137,7 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
       const result = await listTickets({ status: "in progress" });
 
       expect(result.tickets).toHaveLength(1);
-      expect(result.tickets[0]!.status).toBe("In Progress");
+      expect(result.tickets[0]?.status).toBe("In Progress");
     });
 
     test("should build JQL from multiple semantic parameters", async () => {
@@ -146,12 +145,12 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         // Verify the JQL parameter
         const jqlIndex = args.indexOf("--jql");
         expect(jqlIndex).toBeGreaterThan(-1);
-        const jql = args[jqlIndex + 1]!;
+        const jql = args[jqlIndex + 1] as string;
         expect(jql).toContain("assignee = currentUser()");
         expect(jql).toContain('status = "In Review"');
         expect(jql).toContain("project = PROJ");
         expect(jql).toContain("ORDER BY created DESC");
-        
+
         return {
           stdout: "",
           stderr: "",
@@ -181,10 +180,10 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         // Verify the JQL parameter
         const jqlIndex = args.indexOf("--jql");
         expect(jqlIndex).toBeGreaterThan(-1);
-        const jql = args[jqlIndex + 1]!;
+        const jql = args[jqlIndex + 1] as string;
         expect(jql).toContain("created >= -7d");
         expect(jql).toContain("updated >= -7d");
-        
+
         return {
           stdout: "",
           stderr: "",
@@ -205,5 +204,4 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
       expect(mockExecuteJiraCommand).toHaveBeenCalled();
     });
   });
-
 });

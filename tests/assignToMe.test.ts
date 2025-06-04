@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 
 describe("assignToMe", () => {
   afterEach(() => {
@@ -24,12 +24,17 @@ describe("assignToMe", () => {
             "test.user@example.com",
           ]);
           return Promise.resolve({
-            stdout: "✓ Issue TEST-123 has been assigned to test.user@example.com",
+            stdout:
+              "✓ Issue TEST-123 has been assigned to test.user@example.com",
             stderr: "",
             exitCode: 0,
           });
         }
-        return Promise.resolve({ stdout: "", stderr: "Unknown command", exitCode: 1 });
+        return Promise.resolve({
+          stdout: "",
+          stderr: "Unknown command",
+          exitCode: 1,
+        });
       });
 
       mock.module("../src/utils/jiraExecutor", () => ({
@@ -44,7 +49,9 @@ describe("assignToMe", () => {
       expect(result.success).toBe(true);
       expect(result.ticketKey).toBe("TEST-123");
       expect(result.assignee).toBe("test.user@example.com");
-      expect(result.message).toBe("Successfully assigned TEST-123 to test.user@example.com");
+      expect(result.message).toBe(
+        "Successfully assigned TEST-123 to test.user@example.com",
+      );
     });
 
     test("should handle failure to get current user", async () => {
@@ -64,11 +71,11 @@ describe("assignToMe", () => {
       }));
 
       const { assignToMe } = await import("../src/tools/assignToMe");
-      
+
       await expect(
         assignToMe({
           ticketKey: "TEST-456",
-        })
+        }),
       ).rejects.toThrow("Failed to get current user");
     });
 
@@ -96,11 +103,11 @@ describe("assignToMe", () => {
       }));
 
       const { assignToMe } = await import("../src/tools/assignToMe");
-      
+
       await expect(
         assignToMe({
           ticketKey: "TEST-789",
-        })
+        }),
       ).rejects.toThrow("Failed to assign ticket TEST-789");
     });
 
@@ -116,7 +123,8 @@ describe("assignToMe", () => {
         if (args[0] === "issue" && args[1] === "assign") {
           return Promise.resolve({
             stdout: "",
-            stderr: "Issue TEST-999 does not exist or you do not have permission to see it.",
+            stderr:
+              "Issue TEST-999 does not exist or you do not have permission to see it.",
             exitCode: 1,
           });
         }
@@ -132,7 +140,7 @@ describe("assignToMe", () => {
       await expect(
         assignToMe({
           ticketKey: "TEST-999",
-        })
+        }),
       ).rejects.toThrow("Failed to assign ticket TEST-999");
     });
   });

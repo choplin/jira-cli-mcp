@@ -14,43 +14,52 @@ const isJiraAvailable = async (): Promise<boolean> => {
   }
 };
 
-const shouldRunIntegrationTests = isIntegrationTest && await isJiraAvailable();
+const shouldRunIntegrationTests =
+  isIntegrationTest && (await isJiraAvailable());
 
-describe.skipIf(!shouldRunIntegrationTests)("addComment integration tests", () => {
-  test.skipIf(!process.env.JIRA_CLI_MCP_TEST_TICKET)("should add comment with real jira-cli", async () => {
-    // Use the ticket from environment variable
-    const ticketKey = process.env.JIRA_CLI_MCP_TEST_TICKET!;
-    
-    // Add a test comment with timestamp
-    const testComment = `Test comment from MCP integration test at ${new Date().toISOString()}
+describe.skipIf(!shouldRunIntegrationTests)(
+  "addComment integration tests",
+  () => {
+    test.skipIf(!process.env.JIRA_CLI_MCP_TEST_TICKET)(
+      "should add comment with real jira-cli",
+      async () => {
+        // Use the ticket from environment variable
+        const ticketKey = process.env.JIRA_CLI_MCP_TEST_TICKET as string;
+
+        // Add a test comment with timestamp
+        const testComment = `Test comment from MCP integration test at ${new Date().toISOString()}
 
 This comment was added by the jira-cli MCP server integration test suite.`;
-    
-    const result = await addComment({
-      ticketKey,
-      comment: testComment,
-    });
 
-    expect(result.success).toBe(true);
-    expect(result.ticketKey).toBe(ticketKey);
-    
-    // Verify the comment was added by fetching the ticket
-    const ticket = await getTicket({ ticketKey, comments: 10 });
-    const lastComment = ticket.comments[ticket.comments.length - 1];
-    
-    // The comment should be recent (within last minute)
-    if (lastComment) {
-      const commentDate = new Date(lastComment.created);
-      const now = new Date();
-      const diffMinutes = (now.getTime() - commentDate.getTime()) / (1000 * 60);
-      expect(diffMinutes).toBeLessThan(1);
-    }
-  });
+        const result = await addComment({
+          ticketKey,
+          comment: testComment,
+        });
 
-  test.skipIf(!process.env.JIRA_CLI_MCP_TEST_TICKET)("should handle rich text formatting in comments", async () => {
-    const ticketKey = process.env.JIRA_CLI_MCP_TEST_TICKET!;
-    
-    const richComment = `## Integration Test Comment
+        expect(result.success).toBe(true);
+        expect(result.ticketKey).toBe(ticketKey);
+
+        // Verify the comment was added by fetching the ticket
+        const ticket = await getTicket({ ticketKey, comments: 10 });
+        const lastComment = ticket.comments[ticket.comments.length - 1];
+
+        // The comment should be recent (within last minute)
+        if (lastComment) {
+          const commentDate = new Date(lastComment.created);
+          const now = new Date();
+          const diffMinutes =
+            (now.getTime() - commentDate.getTime()) / (1000 * 60);
+          expect(diffMinutes).toBeLessThan(1);
+        }
+      },
+    );
+
+    test.skipIf(!process.env.JIRA_CLI_MCP_TEST_TICKET)(
+      "should handle rich text formatting in comments",
+      async () => {
+        const ticketKey = process.env.JIRA_CLI_MCP_TEST_TICKET as string;
+
+        const richComment = `## Integration Test Comment
 
 This comment tests **rich text** formatting:
 
@@ -70,22 +79,24 @@ const result = await addComment({
 ---
 
 *Italics* and ~~strikethrough~~ text.`;
-    
-    const result = await addComment({
-      ticketKey,
-      comment: richComment,
+
+        const result = await addComment({
+          ticketKey,
+          comment: richComment,
+        });
+
+        expect(result.success).toBe(true);
+      },
+    );
+
+    test("should handle permission errors with real jira-cli", async () => {
+      // Try to add comment to a non-existent ticket
+      await expect(
+        addComment({
+          ticketKey: "NONEXISTENT-999999",
+          comment: "This should fail",
+        }),
+      ).rejects.toThrow();
     });
-
-    expect(result.success).toBe(true);
-  });
-
-  test("should handle permission errors with real jira-cli", async () => {
-    // Try to add comment to a non-existent ticket
-    await expect(
-      addComment({
-        ticketKey: "NONEXISTENT-999999",
-        comment: "This should fail",
-      })
-    ).rejects.toThrow();
-  });
-});
+  },
+);

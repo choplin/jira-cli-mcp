@@ -17,18 +17,7 @@ const server = new McpServer({
 // List tickets tool
 server.tool(
   "list_tickets",
-  {
-    jql: listTicketsSchema.shape.jql,
-    limit: listTicketsSchema.shape.limit,
-    assignedToMe: listTicketsSchema.shape.assignedToMe,
-    unassigned: listTicketsSchema.shape.unassigned,
-    status: listTicketsSchema.shape.status,
-    project: listTicketsSchema.shape.project,
-    createdRecently: listTicketsSchema.shape.createdRecently,
-    updatedRecently: listTicketsSchema.shape.updatedRecently,
-    orderBy: listTicketsSchema.shape.orderBy,
-    orderDirection: listTicketsSchema.shape.orderDirection,
-  },
+  listTicketsSchema.shape,
   async (params) => {
     try {
       const result = await listTickets(params);
@@ -68,10 +57,7 @@ server.tool(
 // Get ticket details tool
 server.tool(
   "get_ticket",
-  {
-    ticketKey: getTicketSchema.shape.ticketKey,
-    comments: getTicketSchema.shape.comments,
-  },
+  getTicketSchema.shape,
   async (params) => {
     try {
       const ticket = await getTicket(params);
@@ -125,10 +111,7 @@ ${ticket.comments.length > 0
 // Update ticket description tool
 server.tool(
   "update_ticket_description",
-  {
-    ticketKey: updateTicketDescriptionSchema.shape.ticketKey,
-    description: updateTicketDescriptionSchema.shape.description,
-  },
+  updateTicketDescriptionSchema.shape,
   async (params) => {
     try {
       const result = await updateTicketDescription(params);
@@ -160,10 +143,7 @@ server.tool(
 // Add comment tool
 server.tool(
   "add_comment",
-  {
-    ticketKey: addCommentSchema.shape.ticketKey,
-    comment: addCommentSchema.shape.comment,
-  },
+  addCommentSchema.shape,
   async (params) => {
     try {
       const result = await addComment(params);
@@ -195,9 +175,7 @@ server.tool(
 // Assign to me tool
 server.tool(
   "assign_to_me",
-  {
-    ticketKey: assignToMeSchema.shape.ticketKey,
-  },
+  assignToMeSchema.shape,
   async (params) => {
     try {
       const result = await assignToMe(params);

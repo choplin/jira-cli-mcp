@@ -20,6 +20,14 @@ server.tool(
   {
     jql: listTicketsSchema.shape.jql,
     limit: listTicketsSchema.shape.limit,
+    assignedToMe: listTicketsSchema.shape.assignedToMe,
+    unassigned: listTicketsSchema.shape.unassigned,
+    status: listTicketsSchema.shape.status,
+    project: listTicketsSchema.shape.project,
+    createdRecently: listTicketsSchema.shape.createdRecently,
+    updatedRecently: listTicketsSchema.shape.updatedRecently,
+    orderBy: listTicketsSchema.shape.orderBy,
+    orderDirection: listTicketsSchema.shape.orderDirection,
   },
   async (params) => {
     try {

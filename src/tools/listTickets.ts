@@ -3,16 +3,89 @@ import { executeJiraCommand } from "../utils/jiraExecutor.js";
 import type { JiraTicket } from "../utils/types.js";
 
 export const listTicketsSchema = z.object({
-  jql: z.string().optional(),
-  limit: z.number().optional().default(20),
+  jql: z.string().optional().describe("Raw JQL query (advanced users only)"),
+  limit: z.number().default(20).describe("Maximum number of tickets to return"),
+  // Semantic filters
+  assignedToMe: z.boolean().optional().describe("Show only tickets assigned to me"),
+  unassigned: z.boolean().optional().describe("Show only unassigned tickets"),
+  status: z.enum(["open", "in progress", "in review", "done", "closed", "todo", "to do"]).optional().describe("Filter by status"),
+  project: z.string().optional().describe("Filter by project key (e.g., 'PROJ')"),
+  createdRecently: z.boolean().optional().describe("Show tickets created in the last 7 days"),
+  updatedRecently: z.boolean().optional().describe("Show tickets updated in the last 7 days"),
+  orderBy: z.enum(["created", "updated", "priority"]).optional().describe("Sort tickets by field"),
+  orderDirection: z.enum(["asc", "desc"]).optional().describe("Sort direction"),
 });
 
 export type ListTicketsParams = z.infer<typeof listTicketsSchema>;
 
-export async function listTickets(params: ListTicketsParams): Promise<{
+// Build JQL from semantic parameters
+function buildJQLFromParams(params: ListTicketsParams): string | undefined {
+  // If raw JQL is provided, use it directly
+  if (params.jql) {
+    return params.jql;
+  }
+
+  const conditions: string[] = [];
+
+  // Assignee filters
+  if (params.assignedToMe) {
+    conditions.push("assignee = currentUser()");
+  } else if (params.unassigned) {
+    conditions.push("assignee is EMPTY");
+  }
+
+  // Status filter
+  if (params.status) {
+    // Map lowercase enum values to Jira status names
+    const statusMap: Record<typeof params.status, string> = {
+      "open": "Open",
+      "in progress": "In Progress",
+      "in review": "In Review",
+      "done": "Done",
+      "closed": "Closed",
+      "todo": "To Do",
+      "to do": "To Do",
+    };
+    const jiraStatus = statusMap[params.status];
+    conditions.push(`status = "${jiraStatus}"`);
+  }
+
+  // Project filter
+  if (params.project) {
+    conditions.push(`project = ${params.project}`);
+  }
+
+  // Date filters
+  if (params.createdRecently) {
+    conditions.push("created >= -7d");
+  }
+  if (params.updatedRecently) {
+    conditions.push("updated >= -7d");
+  }
+
+  // Build the JQL query
+  let jql = conditions.length > 0 ? conditions.join(" AND ") : undefined;
+
+  // Add ordering
+  if (jql && params.orderBy) {
+    const direction = params.orderDirection === "asc" ? "ASC" : "DESC";
+    jql += ` ORDER BY ${params.orderBy} ${direction}`;
+  } else if (!jql && params.orderBy) {
+    // If no filter conditions but ordering is specified
+    const direction = params.orderDirection === "asc" ? "ASC" : "DESC";
+    jql = `ORDER BY ${params.orderBy} ${direction}`;
+  }
+
+  return jql;
+}
+
+export async function listTickets(params: Partial<ListTicketsParams> = {}): Promise<{
   tickets: JiraTicket[];
 }> {
-  const { jql, limit } = params;
+  // Parse params with schema to apply defaults
+  const parsedParams = listTicketsSchema.parse(params);
+  const { limit } = parsedParams;
+  const jql = buildJQLFromParams(parsedParams);
 
   // Build command arguments
   const args = [

@@ -22,13 +22,74 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 bun install
 ```
 
-## Usage
+## Setup for Claude Desktop
 
-The MCP server runs on stdio and can be integrated with AI assistants that support the Model Context Protocol.
+### Option 1: Direct Path (Recommended for Development)
 
-```bash
-bun run src/index.ts
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "bun",
+      "args": ["run", "/path/to/jira_cli_mcp/src/index.ts"]
+    }
+  }
+}
 ```
+
+### Option 2: Built Version (Recommended for Production)
+
+1. Build the project:
+```bash
+cd /path/to/jira_cli_mcp
+bun install
+bun run build
+```
+
+2. Add to config:
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "bun",
+      "args": ["run", "/path/to/jira_cli_mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+### Option 3: Global Binary
+
+1. Create a binary wrapper:
+```bash
+cd /path/to/jira_cli_mcp
+bun build --compile --target=bun-darwin-arm64 --outfile=jira-cli-mcp src/index.ts
+sudo mv jira-cli-mcp /usr/local/bin/
+```
+
+2. Add to config:
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+### Configuration Location
+
+The config file is typically located at:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+### Verification
+
+After setup, restart Claude Desktop and check if the MCP server is loaded by asking Claude about available Jira tools.
 
 ## Development
 
@@ -48,6 +109,9 @@ JIRA_CLI_MCP_TEST_TICKET=PROJ-123 bun run test:integration
 ### Environment Variables
 
 - `JIRA_CLI_PATH` - Custom path to jira-cli executable (default: "jira")
+
+#### Development Environment Variables
+
 - `JIRA_CLI_MCP_TEST_TICKET` - Ticket key for integration tests (required for non-listing integration tests)
 - `INTEGRATION_TEST=true` - Enable integration tests
 

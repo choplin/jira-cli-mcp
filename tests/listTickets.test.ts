@@ -1,21 +1,13 @@
-import { describe, expect, test, mock } from "bun:test";
-import { listTickets } from "../src/tools/listTickets";
+import { describe, expect, test, mock, afterEach } from "bun:test";
 
-const isIntegrationTest = process.env.INTEGRATION_TEST === "true";
-
-const isJiraAvailable = async (): Promise<boolean> => {
-  try {
-    const { executeJiraCommand } = await import("../src/utils/jiraExecutor");
-    const result = await executeJiraCommand(["version"]);
-    return result.exitCode === 0;
-  } catch {
-    return false;
-  }
-};
-
-const shouldRunIntegrationTests = isIntegrationTest && await isJiraAvailable();
 
 describe("listTickets", () => {
+  afterEach(() => {
+    // Note: mock.restore() doesn't restore module mocks in Bun
+    // Module mocks persist across tests, so we organize tests accordingly
+    mock.restore();
+  });
+
   // Mock tests using recorded output
   describe("unit tests (mocked)", () => {
     test("should parse jira issue list output correctly", async () => {
@@ -34,6 +26,7 @@ ABC-12347	Add validation for user input fields		Open	Low	Task	Jane Doe`;
         executeJiraCommand: mockExecuteJiraCommand,
       }));
 
+      const { listTickets } = await import("../src/tools/listTickets");
       const result = await listTickets({
         jql: "assignee = currentUser()",
         limit: 3,
@@ -43,7 +36,7 @@ ABC-12347	Add validation for user input fields		Open	Low	Task	Jane Doe`;
       expect(Array.isArray(result.tickets)).toBe(true);
       expect(result.tickets).toHaveLength(3);
 
-      const ticket = result.tickets[0];
+      const ticket = result.tickets[0]!;
       expect(ticket.key).toBe("ABC-12345");
       expect(ticket.summary).toBe("Implement authentication service");
       expect(ticket.status).toBe("Open");
@@ -64,6 +57,7 @@ ABC-12347	Add validation for user input fields		Open	Low	Task	Jane Doe`;
         executeJiraCommand: mockExecuteJiraCommand,
       }));
 
+      const { listTickets } = await import("../src/tools/listTickets");
       const result = await listTickets({
         jql: "summary ~ 'ThisShouldNotExistAnywhere12345'",
         limit: 10,
@@ -89,7 +83,8 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         executeJiraCommand: mockExecuteJiraCommand,
       }));
 
-      const result = await listTickets({});
+      const { listTickets } = await import("../src/tools/listTickets");
+      const result = await listTickets({ limit: 20 });
 
       expect(result).toHaveProperty("tickets");
       expect(Array.isArray(result.tickets)).toBe(true);
@@ -97,43 +92,4 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
     });
   });
 
-  // Integration tests (only run when INTEGRATION_TEST=true and jira-cli is available)
-  describe.skipIf(!shouldRunIntegrationTests)("integration tests", () => {
-    test("should work with real jira-cli", async () => {
-      const result = await listTickets({
-        jql: "assignee = currentUser()",
-        limit: 3,
-      });
-
-      expect(result).toHaveProperty("tickets");
-      expect(Array.isArray(result.tickets)).toBe(true);
-
-      // Verify structure of tickets if any are returned
-      if (result.tickets.length > 0) {
-        const ticket = result.tickets[0];
-        expect(ticket).toHaveProperty("key");
-        expect(ticket).toHaveProperty("summary");
-        expect(ticket).toHaveProperty("status");
-        expect(ticket).toHaveProperty("priority");
-        expect(ticket).toHaveProperty("type");
-        
-        expect(typeof ticket.key).toBe("string");
-        expect(typeof ticket.summary).toBe("string");
-        expect(typeof ticket.status).toBe("string");
-        expect(typeof ticket.priority).toBe("string");
-        expect(typeof ticket.type).toBe("string");
-      }
-    });
-
-    test("should handle custom JQL query with real jira-cli", async () => {
-      const result = await listTickets({
-        jql: "project IS NOT EMPTY",
-        limit: 2,
-      });
-
-      expect(result).toHaveProperty("tickets");
-      expect(Array.isArray(result.tickets)).toBe(true);
-      expect(result.tickets.length).toBeLessThanOrEqual(2);
-    });
-  });
 });

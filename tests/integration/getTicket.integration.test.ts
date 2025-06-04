@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { getTicket } from "../../src/tools/getTicket";
-import { listTickets } from "../../src/tools/listTickets";
 
 const isIntegrationTest = process.env.INTEGRATION_TEST === "true";
 
@@ -17,33 +16,50 @@ const isJiraAvailable = async (): Promise<boolean> => {
 const shouldRunIntegrationTests = isIntegrationTest && await isJiraAvailable();
 
 describe.skipIf(!shouldRunIntegrationTests)("getTicket integration tests", () => {
-  test("should work with real jira-cli", async () => {
-    // First, get a valid ticket from list to use for testing
-    const ticketList = await listTickets({ limit: 1 });
+  test.skipIf(!process.env.JIRA_CLI_MCP_TEST_TICKET)("should work with real jira-cli", async () => {
+    // Use the ticket from environment variable
+    const ticketKey = process.env.JIRA_CLI_MCP_TEST_TICKET!;
     
-    if (ticketList.tickets.length === 0) {
-      console.log("Skipping test: no tickets available");
-      return;
-    }
-
-    const firstTicketKey = ticketList.tickets[0]!.key;
+    // Get the ticket
     const result = await getTicket({
-      ticketKey: firstTicketKey,
-      comments: 2,
+      ticketKey: ticketKey,
+      comments: 5,
     });
 
+    // Verify ticket data structure
     expect(result).toHaveProperty("key");
     expect(result).toHaveProperty("summary");
     expect(result).toHaveProperty("status");
     expect(result).toHaveProperty("priority");
     expect(result).toHaveProperty("type");
     expect(result).toHaveProperty("comments");
+    expect(result).toHaveProperty("description");
+    expect(result).toHaveProperty("assignee");
+    expect(result).toHaveProperty("reporter");
+    expect(result).toHaveProperty("created");
+    expect(result).toHaveProperty("updated");
     
+    // Verify data types
     expect(typeof result.key).toBe("string");
     expect(typeof result.summary).toBe("string");
     expect(typeof result.status).toBe("string");
+    expect(typeof result.priority).toBe("string");
+    expect(typeof result.type).toBe("string");
     expect(Array.isArray(result.comments)).toBe(true);
-    expect(result.key).toBe(firstTicketKey);
+    
+    // Verify specific values
+    expect(result.key).toBe(ticketKey);
+    
+    // Verify description exists (we don't know its content)
+    expect(result.description).toBeDefined();
+    
+    // Verify comments structure if any exist
+    if (result.comments.length > 0) {
+      const firstComment = result.comments[0]!;
+      expect(firstComment).toHaveProperty("author");
+      expect(firstComment).toHaveProperty("body");
+      expect(firstComment).toHaveProperty("created");
+    }
   });
 
   test("should handle invalid ticket key with real jira-cli", async () => {

@@ -17,21 +17,8 @@ describe("jiraExecutor", () => {
       // The actual error handling is tested in integration tests
     });
 
-    test("should respect JIRA_CLI_PATH environment variable", async () => {
-      // This test verifies the path is used, not that it works
-      process.env.JIRA_CLI_PATH = "/custom/jira/path";
-
-      const { executeJiraCommand, JiraCliError } = await import(
-        "../src/utils/jiraExecutor"
-      );
-
-      try {
-        await executeJiraCommand(["version"]);
-      } catch (error) {
-        expect(error).toBeInstanceOf(JiraCliError);
-        expect((error as Error).message).toContain("/custom/jira/path");
-      }
-    });
+    // Note: Test for JIRA_CLI_PATH environment variable moved to integration tests
+    // because it requires actual command execution
 
     test("should parse JSON output when executeJiraCommandJson succeeds", async () => {
       // This test just verifies the JSON parsing logic, not the actual command execution

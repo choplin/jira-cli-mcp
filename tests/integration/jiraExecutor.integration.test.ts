@@ -63,5 +63,28 @@ describe.skipIf(!shouldRunIntegrationTests)(
       const result = await executeJiraCommand(["version"]);
       expect(result.exitCode).toBe(0);
     });
+
+    test("should respect JIRA_CLI_PATH environment variable", async () => {
+      // This test verifies the error message includes the custom path
+      process.env.JIRA_CLI_PATH = "/custom/jira/path";
+
+      // Clear module cache to ensure new environment variable is picked up
+      delete require.cache[require.resolve("../../src/utils/jiraExecutor")];
+      delete require.cache[require.resolve("../../src/config")];
+
+      const { executeJiraCommand, JiraCliError } = await import(
+        "../../src/utils/jiraExecutor"
+      );
+
+      try {
+        await executeJiraCommand(["version"]);
+      } catch (error) {
+        expect(error).toBeInstanceOf(JiraCliError);
+        expect((error as Error).message).toContain("/custom/jira/path");
+      }
+
+      // Reset environment variable
+      process.env.JIRA_CLI_PATH = undefined;
+    });
   },
 );

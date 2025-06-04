@@ -9,6 +9,7 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 - **update_ticket_description** - Update ticket descriptions with rich text formatting
 - **add_comment** - Add comments to tickets with Markdown support
 - **assign_to_me** - Assign tickets to the current user
+- **move_ticket** - Move tickets between different statuses
 
 ## Prerequisites
 

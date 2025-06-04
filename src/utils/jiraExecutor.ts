@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 import { getConfig } from "../config.js";
 import type { CommandResult } from "./types.js";
 

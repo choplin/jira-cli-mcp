@@ -93,7 +93,9 @@ Add to `claude_desktop_config.json`:
 
 ## Recent Changes
 
-- Renamed project from `jira_cli_mcp` to `jira-cli-mcp` for npm naming consistency
-- Added semantic parameters to list_tickets for easier AI usage
-- Implemented comprehensive lint fixes and type safety improvements
-- Setup lefthook for automated code quality checks
+- Released v0.1.0 - Initial public release
+- Added Apache License 2.0
+- Added GitHub Actions CI workflow
+- Fixed unit tests to pass without jira-cli installed
+- Added CI status badge to README
+- Created GitHub release with comprehensive release notes

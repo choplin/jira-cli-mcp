@@ -33,7 +33,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "jira-cli": {
       "command": "bun",
-      "args": ["run", "/path/to/jira_cli_mcp/src/index.ts"]
+      "args": ["run", "/path/to/jira-cli-mcp/src/index.ts"]
     }
   }
 }
@@ -43,7 +43,7 @@ Add to your `claude_desktop_config.json`:
 
 1. Build the project:
 ```bash
-cd /path/to/jira_cli_mcp
+cd /path/to/jira-cli-mcp
 bun install
 bun run build
 ```
@@ -54,7 +54,7 @@ bun run build
   "mcpServers": {
     "jira-cli": {
       "command": "bun",
-      "args": ["run", "/path/to/jira_cli_mcp/dist/index.js"]
+      "args": ["run", "/path/to/jira-cli-mcp/dist/index.js"]
     }
   }
 }
@@ -64,7 +64,7 @@ bun run build
 
 1. Create a binary wrapper:
 ```bash
-cd /path/to/jira_cli_mcp
+cd /path/to/jira-cli-mcp
 bun build --compile --target=bun-darwin-arm64 --outfile=jira-cli-mcp src/index.ts
 sudo mv jira-cli-mcp /usr/local/bin/
 ```

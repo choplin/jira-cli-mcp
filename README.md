@@ -1,5 +1,6 @@
 # Jira CLI MCP Server
 
+[![CI](https://github.com/choplin/jira-cli-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/choplin/jira-cli-mcp/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![MCP](https://img.shields.io/badge/MCP-1.0-green.svg)](https://modelcontextprotocol.io)
 

@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { executeJiraCommand } from "../utils/jiraExecutor.js";
+import { JIRA_STATUS_VALUES, JIRA_STATUS_MAP } from "../utils/types.js";
 
 export const moveTicketSchema = z.object({
   ticketKey: z.string().describe("Jira ticket key (e.g., PROJ-123)"),
-  status: z.enum(["open", "in progress", "in review", "done", "closed", "todo", "to do"]).describe("Target status to move the ticket to"),
+  status: z.enum(JIRA_STATUS_VALUES).describe("Target status to move the ticket to"),
 });
 
 export type MoveTicketParams = z.infer<typeof moveTicketSchema>;
@@ -22,16 +23,7 @@ export async function moveTicket(
   const { ticketKey, status } = params;
 
   // Map lowercase enum values to Jira status names
-  const statusMap: Record<typeof status, string> = {
-    "open": "Open",
-    "in progress": "In Progress",
-    "in review": "In Review",
-    "done": "Done",
-    "closed": "Closed",
-    "todo": "To Do",
-    "to do": "To Do",
-  };
-  const targetStatus = statusMap[status];
+  const targetStatus = JIRA_STATUS_MAP[status];
 
   // First, get current status using list command with specific JQL
   const viewResult = await executeJiraCommand([
@@ -51,7 +43,7 @@ export async function moveTicket(
 
   // Parse the output - format is "KEY\tStatus"
   const outputParts = viewResult.stdout.trim().split("\t");
-  const currentStatus = outputParts[1] || outputParts[0]; // Handle both "Status" and "KEY\tStatus" formats
+  const currentStatus = outputParts[1] || outputParts[0] || "Unknown"; // Handle both "Status" and "KEY\tStatus" formats
 
   // Move the ticket to the new status
   try {

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { executeJiraCommand } from "../utils/jiraExecutor.js";
 import type { JiraTicket } from "../utils/types.js";
+import { JIRA_STATUS_VALUES, JIRA_STATUS_MAP } from "../utils/types.js";
 
 export const listTicketsSchema = z.object({
   jql: z.string().optional().describe("Raw JQL query (advanced users only)"),
@@ -8,7 +9,7 @@ export const listTicketsSchema = z.object({
   // Semantic filters
   assignedToMe: z.boolean().optional().describe("Show only tickets assigned to me"),
   unassigned: z.boolean().optional().describe("Show only unassigned tickets"),
-  status: z.enum(["open", "in progress", "in review", "done", "closed", "todo", "to do"]).optional().describe("Filter by status"),
+  status: z.enum(JIRA_STATUS_VALUES).optional().describe("Filter by status"),
   project: z.string().optional().describe("Filter by project key (e.g., 'PROJ')"),
   createdRecently: z.boolean().optional().describe("Show tickets created in the last 7 days"),
   updatedRecently: z.boolean().optional().describe("Show tickets updated in the last 7 days"),
@@ -36,17 +37,7 @@ function buildJQLFromParams(params: ListTicketsParams): string | undefined {
 
   // Status filter
   if (params.status) {
-    // Map lowercase enum values to Jira status names
-    const statusMap: Record<typeof params.status, string> = {
-      "open": "Open",
-      "in progress": "In Progress",
-      "in review": "In Review",
-      "done": "Done",
-      "closed": "Closed",
-      "todo": "To Do",
-      "to do": "To Do",
-    };
-    const jiraStatus = statusMap[params.status];
+    const jiraStatus = JIRA_STATUS_MAP[params.status];
     conditions.push(`status = "${jiraStatus}"`);
   }
 

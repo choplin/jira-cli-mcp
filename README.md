@@ -1,5 +1,8 @@
 # Jira CLI MCP Server
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![MCP](https://img.shields.io/badge/MCP-1.0-green.svg)](https://modelcontextprotocol.io)
+
 MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact with Jira.
 
 ## Features
@@ -145,3 +148,7 @@ bun run format
 - The server uses Atlassian Document Format (ADF) for rich text handling
 - Markdown input is automatically converted to ADF by jira-cli
 - All integration tests require proper jira-cli authentication
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

@@ -70,17 +70,11 @@ function buildJQLFromParams(params: ListTicketsParams): string | undefined {
   }
 
   // Build the JQL query
-  let jql = conditions.length > 0 ? conditions.join(" AND ") : undefined;
+  const jql = conditions.length > 0 ? conditions.join(" AND ") : undefined;
 
-  // Add ordering
-  if (jql && params.orderBy) {
-    const direction = params.orderDirection === "asc" ? "ASC" : "DESC";
-    jql += ` ORDER BY ${params.orderBy} ${direction}`;
-  } else if (!jql && params.orderBy) {
-    // If no filter conditions but ordering is specified
-    const direction = params.orderDirection === "asc" ? "ASC" : "DESC";
-    jql = `ORDER BY ${params.orderBy} ${direction}`;
-  }
+  // Note: jira-cli has a bug with ORDER BY in JQL queries
+  // We handle ordering via --order-by flag instead
+  // See: https://github.com/choplin/jira-cli-mcp/issues/11
 
   return jql;
 }
@@ -108,6 +102,17 @@ export async function listTickets(
   // Add JQL only if provided
   if (jql) {
     args.push("--jql", jql);
+  }
+
+  // Add ordering using jira-cli flags (workaround for ORDER BY bug in jira-cli)
+  // See: https://github.com/choplin/jira-cli-mcp/issues/11
+  if (parsedParams.orderBy) {
+    args.push("--order-by", parsedParams.orderBy);
+    if (parsedParams.orderDirection === "asc") {
+      // jira-cli uses --reverse flag, which defaults to DESC
+      // So we only add --reverse for ASC (to reverse the default DESC)
+      args.push("--reverse");
+    }
   }
 
   if (limit > 0) {

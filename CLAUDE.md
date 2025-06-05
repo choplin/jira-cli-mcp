@@ -97,9 +97,20 @@ Add to `claude_desktop_config.json`:
 
 ## Recent Changes
 
-- Released v0.1.0 - Initial public release
+### v0.2.0 (Current)
+
+- Added `open_ticket_in_browser` tool - Opens Jira tickets in the default web browser
+- Added Homebrew distribution support with automatic tap updates
+- Fixed `add_comment` and `update_ticket_description` to use stdin for long content
+- Added dual distribution via npm and pre-compiled binaries
+- Added setup instructions for Claude Code and GitHub Copilot
+- Added markdownlint for consistent markdown formatting
+- Improved documentation with package manager distribution plans
+
+### v0.1.0
+
+- Initial public release with core MCP tools
 - Added Apache License 2.0
 - Added GitHub Actions CI workflow
 - Fixed unit tests to pass without jira-cli installed
 - Added CI status badge to README
-- Created GitHub release with comprehensive release notes

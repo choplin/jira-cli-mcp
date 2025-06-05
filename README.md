@@ -6,6 +6,22 @@
 
 MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact with Jira.
 
+## Why jira-cli-mcp?
+
+If you're looking for a Jira MCP server, here's what makes jira-cli-mcp unique:
+
+- **🚀 Leverage Existing Tools** - Works seamlessly with your existing jira-cli setup and authentication
+- **🔒 Security-First** - No API tokens in config files; authentication handled by jira-cli  
+- **🪶 Lightweight** - Just a Bun process, no Docker or containers required
+
+### When to use mcp-atlassian instead?
+
+Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
+- Need **Confluence** support (we're Jira-only)
+- Prefer **Docker** deployment 
+- Want a **self-contained** solution without CLI dependencies
+- Need **direct API** integration rather than CLI wrapping
+
 ## Features
 
 - **list_tickets** - Search and list Jira tickets using JQL queries
@@ -16,10 +32,35 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 - **move_ticket** - Move tickets between different statuses
 - **open_ticket_in_browser** - Open a Jira ticket in the default web browser
 
+## Quick Start
+
+1. Install and configure [jira-cli](https://github.com/ankitpokhrel/jira-cli) ([Installation guide](https://github.com/ankitpokhrel/jira-cli/wiki/Installation)):
+   ```bash
+   # Install jira-cli (macOS)
+   brew install ankitpokhrel/jira-cli/jira-cli
+   
+   # Configure jira-cli with your Jira instance
+   jira init
+   ```
+
+2. Install [Bun](https://bun.sh) runtime:
+   ```bash
+   curl -fsSL https://bun.sh/install | bash
+   ```
+
+3. Clone and install this MCP server:
+   ```bash
+   git clone https://github.com/choplin/jira-cli-mcp.git
+   cd jira-cli-mcp
+   bun install
+   ```
+
+4. Add to Claude Desktop config (see [Setup](#setup-for-claude-desktop) below)
+
 ## Prerequisites
 
 - [jira-cli](https://github.com/ankitpokhrel/jira-cli) installed and authenticated
-- Bun runtime
+- [Bun](https://bun.sh) runtime
 
 ## Installation
 
@@ -150,6 +191,36 @@ bun run format
 - The server uses Atlassian Document Format (ADF) for rich text handling
 - Markdown input is automatically converted to ADF by jira-cli
 - All integration tests require proper jira-cli authentication
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"jira-cli not found" error**
+   - Ensure jira-cli is installed: `which jira`
+   - If using a custom path, set `JIRA_CLI_PATH` environment variable
+
+2. **Authentication errors**
+   - Run `jira me` to verify authentication
+   - Re-authenticate with `jira init` if needed
+
+3. **MCP server not showing in Claude Desktop**
+   - Verify the config file path is correct
+   - Ensure the path in config uses absolute paths, not relative
+   - Restart Claude Desktop after config changes
+
+4. **Permission errors on macOS**
+   - Grant terminal/Claude Desktop full disk access in System Preferences
+   - Ensure jira-cli has necessary permissions
+
+### Debug Mode
+
+To see detailed logs, you can run the server manually:
+
+```bash
+cd /path/to/jira-cli-mcp
+bun run src/index.ts
+```
 
 ## License
 

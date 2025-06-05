@@ -110,13 +110,6 @@ jobs:
       - name: Build for npm
         run: bun run build:prod
 
-      - name: Update shebang for Node.js
-        run: |
-          echo '#!/usr/bin/env node' > dist/index.js.tmp
-          cat dist/index.js >> dist/index.js.tmp
-          mv dist/index.js.tmp dist/index.js
-          chmod +x dist/index.js
-
       - name: Test npm package
         run: |
           npm pack

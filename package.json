@@ -40,8 +40,8 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
-    "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap src/index.ts",
-    "build:prod": "rm -rf dist && bun build --target=bun --outdir=dist --minify --sourcemap=none src/index.ts",
+    "build": "rm -rf dist && bun build --target=node --banner=$'#!/usr/bin/env node\\n' --outdir=dist --sourcemap src/index.ts",
+    "build:prod": "rm -rf dist && bun build --target=node --banner=$'#!/usr/bin/env node\\n' --outdir=dist --minify --sourcemap=none src/index.ts",
     "build:tsc": "rm -rf dist && tsc -p tsconfig.build.json",
     "build:binary:darwin-arm64": "bun build --compile --target=bun-darwin-arm64 --minify --sourcemap=none --outfile=jira-cli-mcp-darwin-arm64 src/index.ts",
     "build:binary:darwin-x64": "bun build --compile --target=bun-darwin-x64 --minify --sourcemap=none --outfile=jira-cli-mcp-darwin-x64 src/index.ts",

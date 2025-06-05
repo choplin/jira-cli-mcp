@@ -64,7 +64,14 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
 
 ## Installation
 
-### Option 1: Install via npm (Recommended)
+### Option 1: Install via Homebrew (macOS/Linux)
+
+```bash
+brew tap choplin/jira-cli-mcp
+brew install jira-cli-mcp
+```
+
+### Option 2: Install via npm
 
 ```bash
 # Install globally with npm
@@ -74,7 +81,7 @@ npm install -g @choplin/jira-cli-mcp
 bun install -g @choplin/jira-cli-mcp
 ```
 
-### Option 2: Download Binary
+### Option 3: Download Binary
 
 Download the pre-compiled binary for your platform from the [releases page](https://github.com/choplin/jira-cli-mcp/releases):
 
@@ -90,7 +97,7 @@ chmod +x jira-cli-mcp-darwin-arm64
 sudo mv jira-cli-mcp-darwin-arm64 /usr/local/bin/jira-cli-mcp
 ```
 
-### Option 3: Build from Source
+### Option 4: Build from Source
 
 ```bash
 git clone https://github.com/choplin/jira-cli-mcp.git

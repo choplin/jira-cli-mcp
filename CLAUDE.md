@@ -97,7 +97,14 @@ Add to `claude_desktop_config.json`:
 
 ## Recent Changes
 
-### v0.2.1 (Current)
+### v0.3.0 (Current)
+
+- Changed license from Apache 2.0 to MIT
+- Added tool descriptions and annotations for better discoverability in MCP clients
+- Fixed npm distribution shebang issue for users without bun installed
+- Removed duplicate shebang modification in CI workflow
+
+### v0.2.1
 
 - Fixed JQL ORDER BY error by implementing workaround for jira-cli bug (#11)
   - Removed ORDER BY clause from JQL generation
@@ -117,7 +124,7 @@ Add to `claude_desktop_config.json`:
 ### v0.1.0
 
 - Initial public release with core MCP tools
-- Added Apache License 2.0
+- Added Apache License 2.0 (later changed to MIT in v0.3.0)
 - Added GitHub Actions CI workflow
 - Fixed unit tests to pass without jira-cli installed
 - Added CI status badge to README

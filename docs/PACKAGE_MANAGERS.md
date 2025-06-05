@@ -29,7 +29,7 @@ pkgrel=1
 pkgdesc="MCP server that wraps jira-cli for AI assistants"
 arch=('x86_64' 'aarch64')
 url="https://github.com/choplin/jira-cli-mcp"
-license=('Apache')
+license=('MIT')
 depends=('jira-cli')
 source_x86_64=("https://github.com/choplin/jira-cli-mcp/releases/download/v${pkgver}/jira-cli-mcp-linux-x64.tar.gz")
 source_aarch64=("https://github.com/choplin/jira-cli-mcp/releases/download/v${pkgver}/jira-cli-mcp-linux-arm64.tar.gz")
@@ -52,7 +52,7 @@ Example manifest:
     "version": "0.1.0",
     "description": "MCP server that wraps jira-cli for AI assistants",
     "homepage": "https://github.com/choplin/jira-cli-mcp",
-    "license": "Apache-2.0",
+    "license": "MIT",
     "architecture": {
         "64bit": {
             "url": "https://github.com/choplin/jira-cli-mcp/releases/download/v0.1.0/jira-cli-mcp-windows-x64.zip",

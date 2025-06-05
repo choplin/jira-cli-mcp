@@ -1,7 +1,7 @@
 # Jira CLI MCP Server
 
 [![CI](https://github.com/choplin/jira-cli-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/choplin/jira-cli-mcp/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-1.0-green.svg)](https://modelcontextprotocol.io)
 
 MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact
@@ -341,4 +341,4 @@ bun run src/index.ts
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

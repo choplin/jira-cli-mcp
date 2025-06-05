@@ -1,0 +1,33 @@
+# Source files
+src/
+tests/
+
+# Config files
+.github/
+biome.json
+commitlint.config.js
+lefthook.yml
+tsconfig.json
+tsconfig.build.json
+CLAUDE.md
+
+# Build artifacts
+jira-cli-mcp-*
+*.tar.gz
+
+# Development files
+.git/
+.gitignore
+.npmignore
+node_modules/
+bun.lockb
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Logs and temp files
+*.log
+.env*
+coverage/

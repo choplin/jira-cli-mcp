@@ -64,13 +64,44 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
 
 ## Installation
 
+### Option 1: Install via npm (Recommended)
+
 ```bash
+# Install globally with npm
+npm install -g @choplin/jira-cli-mcp
+
+# Or with Bun
+bun install -g @choplin/jira-cli-mcp
+```
+
+### Option 2: Download Binary
+
+Download the pre-compiled binary for your platform from the [releases page](https://github.com/choplin/jira-cli-mcp/releases):
+
+- macOS (Apple Silicon): `jira-cli-mcp-darwin-arm64.tar.gz`
+- macOS (Intel): `jira-cli-mcp-darwin-x64.tar.gz`
+- Linux (x64): `jira-cli-mcp-linux-x64.tar.gz`
+- Linux (ARM64): `jira-cli-mcp-linux-arm64.tar.gz`
+
+```bash
+# Example for macOS (Apple Silicon)
+tar -xzf jira-cli-mcp-darwin-arm64.tar.gz
+chmod +x jira-cli-mcp-darwin-arm64
+sudo mv jira-cli-mcp-darwin-arm64 /usr/local/bin/jira-cli-mcp
+```
+
+### Option 3: Build from Source
+
+```bash
+git clone https://github.com/choplin/jira-cli-mcp.git
+cd jira-cli-mcp
 bun install
+bun run build:prod
 ```
 
 ## Setup for Claude Desktop
 
-### Option 1: Direct Path (Recommended for Development)
+### Option 1: Using npm Package (Lightest Option)
 
 Add to your `claude_desktop_config.json`:
 
@@ -78,53 +109,65 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "jira-cli": {
-      "command": "bun",
-      "args": ["run", "/path/to/jira-cli-mcp/src/index.ts"]
+      "command": "npx",
+      "args": ["@choplin/jira-cli-mcp"]
     }
   }
 }
 ```
 
-### Option 2: Built Version (Recommended for Production)
-
-1. Build the project:
-
-```bash
-cd /path/to/jira-cli-mcp
-bun install
-bun run build
-```
-
-2. Add to config:
-
-```json
-{
-  "mcpServers": {
-    "jira-cli": {
-      "command": "bun",
-      "args": ["run", "/path/to/jira-cli-mcp/dist/index.js"]
-    }
-  }
-}
-```
-
-### Option 3: Global Binary
-
-1. Create a binary wrapper:
-
-```bash
-cd /path/to/jira-cli-mcp
-bun build --compile --target=bun-darwin-arm64 --outfile=jira-cli-mcp src/index.ts
-sudo mv jira-cli-mcp /usr/local/bin/
-```
-
-2. Add to config:
+Or if installed globally:
 
 ```json
 {
   "mcpServers": {
     "jira-cli": {
       "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+### Option 2: Using Pre-compiled Binary (No Dependencies)
+
+1. Download the binary for your platform from [releases](https://github.com/choplin/jira-cli-mcp/releases)
+2. Extract and move to your PATH:
+
+```bash
+tar -xzf jira-cli-mcp-darwin-arm64.tar.gz
+sudo mv jira-cli-mcp-darwin-arm64 /usr/local/bin/jira-cli-mcp
+```
+
+3. Add to config:
+
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+### Option 3: Build from Source
+
+1. Clone and run directly:
+
+```bash
+git clone https://github.com/choplin/jira-cli-mcp.git
+cd jira-cli-mcp
+bun install
+```
+
+2. Add to config:
+
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "bun",
+      "args": ["run", "/path/to/jira-cli-mcp/src/index.ts"]
     }
   }
 }

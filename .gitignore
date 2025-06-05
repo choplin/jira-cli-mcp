@@ -39,3 +39,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Claude working directory
 .claude
+
+# Test downloads
+*.tar.gz.bak

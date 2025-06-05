@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { addComment, addCommentSchema } from "./tools/addComment.js";

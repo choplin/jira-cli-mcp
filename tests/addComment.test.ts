@@ -20,21 +20,23 @@ describe("addComment", () => {
   // Mock tests using recorded output
   describe("unit tests (mocked)", () => {
     test("should add comment successfully", async () => {
-      const mockExecuteJiraCommand = mock(async (args: string[]) => {
-        expect(args).toEqual([
-          "issue",
-          "comment",
-          "add",
-          "TEST-123",
-          "This is a test comment",
-          "--no-input",
-        ]);
-        return {
-          stdout: "✓ Comment added to TEST-123",
-          stderr: "",
-          exitCode: 0,
-        };
-      });
+      const mockExecuteJiraCommand = mock(
+        async (args: string[], input?: string) => {
+          expect(args).toEqual([
+            "issue",
+            "comment",
+            "add",
+            "TEST-123",
+            "--no-input",
+          ]);
+          expect(input).toBe("This is a test comment");
+          return {
+            stdout: "✓ Comment added to TEST-123",
+            stderr: "",
+            exitCode: 0,
+          };
+        },
+      );
 
       mock.module("../src/utils/jiraExecutor", () => ({
         executeJiraCommand: mockExecuteJiraCommand,

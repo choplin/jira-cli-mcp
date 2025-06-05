@@ -200,6 +200,60 @@ The config file is typically located at:
 
 After setup, restart Claude Desktop and check if the MCP server is loaded by asking Claude about available Jira tools.
 
+## Setup for Other AI Assistants
+
+### Claude Code
+
+Claude Code has built-in support for MCP servers. To use jira-cli-mcp in your project:
+
+1. First install jira-cli-mcp using one of the methods in the [Installation](#installation) section
+
+2. Create a `.claude/mcp.json` file in your project root:
+
+```json
+{
+  "servers": {
+    "jira-cli": {
+      "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+3. Restart Claude Code and the MCP server will be automatically loaded
+
+You can then use Jira commands directly in your conversation, such as:
+- "List my open Jira tickets"
+- "Show me details for PROJ-123"
+- "Add a comment to PROJ-456"
+
+### GitHub Copilot (VS Code)
+
+GitHub Copilot supports MCP servers in Visual Studio Code (version 1.99+):
+
+1. First install jira-cli-mcp using one of the methods in the [Installation](#installation) section
+
+2. Create `.vscode/mcp.json` in your repository:
+
+```json
+{
+  "servers": {
+    "jira-cli": {
+      "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+3. Open the `.vscode/mcp.json` file in VS Code and click the **[Start]** button to activate the server
+
+4. In Copilot Chat:
+   - Open Copilot Chat panel
+   - Select "Agent" from the popup menu
+   - Click the tools icon to see available MCP servers
+
+**Note**: MCP support in GitHub Copilot is currently in public preview.
+
 ## Development
 
 ### Running Tests

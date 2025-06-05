@@ -22,16 +22,9 @@ export async function updateTicketDescription(
 ): Promise<UpdateTicketDescriptionResult> {
   const { ticketKey, description } = params;
 
-  // Build command arguments
-  const args = [
-    "issue",
-    "edit",
-    ticketKey,
-    "--body",
-    description,
-    "--no-input",
-  ];
-  const result = await executeJiraCommand(args);
+  // Use stdin for description to handle multi-line content and special characters
+  const args = ["issue", "edit", ticketKey, "--no-input"];
+  const result = await executeJiraCommand(args, description);
 
   if (result.exitCode !== 0) {
     throw new Error(`Failed to update ticket ${ticketKey}: ${result.stderr}`);

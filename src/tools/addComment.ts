@@ -19,9 +19,9 @@ export async function addComment(
 ): Promise<AddCommentResult> {
   const { ticketKey, comment } = params;
 
-  // Build command arguments
-  const args = ["issue", "comment", "add", ticketKey, comment, "--no-input"];
-  const result = await executeJiraCommand(args);
+  // Use stdin for comment body to handle multi-line comments and special characters
+  const args = ["issue", "comment", "add", ticketKey, "--no-input"];
+  const result = await executeJiraCommand(args, comment);
 
   if (result.exitCode !== 0) {
     throw new Error(`Failed to add comment to ${ticketKey}: ${result.stderr}`);

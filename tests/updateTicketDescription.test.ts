@@ -20,21 +20,17 @@ describe("updateTicketDescription", () => {
   // Mock tests using recorded output
   describe("unit tests (mocked)", () => {
     test("should update ticket description successfully", async () => {
-      const mockExecuteJiraCommand = mock(async (args: string[]) => {
-        expect(args).toEqual([
-          "issue",
-          "edit",
-          "TEST-123",
-          "--body",
-          "This is the new description",
-          "--no-input",
-        ]);
-        return {
-          stdout: "✓ Issue TEST-123 has been updated",
-          stderr: "",
-          exitCode: 0,
-        };
-      });
+      const mockExecuteJiraCommand = mock(
+        async (args: string[], input?: string) => {
+          expect(args).toEqual(["issue", "edit", "TEST-123", "--no-input"]);
+          expect(input).toBe("This is the new description");
+          return {
+            stdout: "✓ Issue TEST-123 has been updated",
+            stderr: "",
+            exitCode: 0,
+          };
+        },
+      );
 
       mock.module("../src/utils/jiraExecutor", () => ({
         executeJiraCommand: mockExecuteJiraCommand,

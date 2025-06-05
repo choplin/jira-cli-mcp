@@ -15,6 +15,7 @@ export class JiraCliError extends Error {
 
 export async function executeJiraCommand(
   args: string[],
+  input?: string,
 ): Promise<CommandResult> {
   const config = getConfig();
   const jiraPath = config.jiraCliPath;
@@ -26,6 +27,15 @@ export async function executeJiraCommand(
     const proc = spawn(jiraPath, args, {
       env: { ...process.env },
     });
+
+    // Write input to stdin if provided
+    if (input) {
+      proc.stdin.on("error", (err) => {
+        console.error("Error writing to stdin:", err);
+      });
+      proc.stdin.write(input, "utf-8");
+      proc.stdin.end();
+    }
 
     proc.stdout.on("data", (chunk) => {
       chunks.push(chunk);

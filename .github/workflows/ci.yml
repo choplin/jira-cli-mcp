@@ -23,6 +23,9 @@ jobs:
       - name: Run Biome checks
         run: bun run check
 
+      - name: Run markdownlint
+        run: bun run lint:md
+
       - name: Run type checking
         run: bun run typecheck
 

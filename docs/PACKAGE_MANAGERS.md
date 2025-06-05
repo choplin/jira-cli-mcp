@@ -5,6 +5,7 @@ This document outlines how to distribute jira-cli-mcp through various package ma
 ## Current Support
 
 ### Homebrew (macOS/Linux)
+
 - Status: ✅ Implemented
 - Installation: `brew tap choplin/jira-cli-mcp && brew install jira-cli-mcp`
 - Formula location: `homebrew/jira-cli-mcp.rb`
@@ -12,6 +13,7 @@ This document outlines how to distribute jira-cli-mcp through various package ma
 ## Future Package Managers
 
 ### AUR (Arch Linux)
+
 - Status: 📋 Planned
 - Package name: `jira-cli-mcp-bin`
 - Required files:
@@ -19,6 +21,7 @@ This document outlines how to distribute jira-cli-mcp through various package ma
   - `.SRCINFO`
 
 Example PKGBUILD:
+
 ```bash
 pkgname=jira-cli-mcp-bin
 pkgver=0.1.0
@@ -37,11 +40,13 @@ package() {
 ```
 
 ### Scoop (Windows)
+
 - Status: 📋 Planned
 - Bucket: `extras` or custom bucket
 - Manifest: `jira-cli-mcp.json`
 
 Example manifest:
+
 ```json
 {
     "version": "0.1.0",
@@ -67,6 +72,7 @@ Example manifest:
 ```
 
 ### APT/DEB (Debian/Ubuntu)
+
 - Status: 📋 Planned
 - Options:
   1. PPA (Personal Package Archive)
@@ -74,6 +80,7 @@ Example manifest:
   3. Submit to official repositories
 
 ### RPM (Fedora/RHEL)
+
 - Status: 📋 Planned
 - Options:
   1. COPR repository
@@ -81,6 +88,7 @@ Example manifest:
   3. Submit to official repositories
 
 ### Nix
+
 - Status: 📋 Planned
 - Package in nixpkgs
 - Flake support
@@ -95,4 +103,5 @@ Example manifest:
 
 ## Automation
 
-Each package manager should be updated automatically via GitHub Actions when a new release is created. The `release.yml` workflow can be extended to handle each package manager.
+Each package manager should be updated automatically via GitHub Actions when a new release is created. The
+`release.yml` workflow can be extended to handle each package manager.

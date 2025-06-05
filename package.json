@@ -1,15 +1,53 @@
 {
-  "name": "jira-cli-mcp",
+  "name": "@choplin/jira-cli-mcp",
   "version": "0.1.0",
+  "description": "MCP server that wraps jira-cli for AI assistants",
   "license": "Apache-2.0",
-  "module": "src/index.ts",
+  "author": "Akihiro Okuno",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/choplin/jira-cli-mcp.git"
+  },
+  "homepage": "https://github.com/choplin/jira-cli-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/choplin/jira-cli-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "jira",
+    "jira-cli",
+    "modelcontextprotocol",
+    "ai",
+    "claude"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "type": "module",
-  "private": true,
+  "bin": {
+    "jira-cli-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
     "build": "rm -rf dist && bun build --target=bun --outdir=dist --sourcemap src/index.ts",
+    "build:prod": "rm -rf dist && bun build --target=bun --outdir=dist --minify --sourcemap=none src/index.ts",
     "build:tsc": "rm -rf dist && tsc -p tsconfig.build.json",
+    "build:binary:darwin-arm64": "bun build --compile --target=bun-darwin-arm64 --minify --sourcemap=none --outfile=jira-cli-mcp-darwin-arm64 src/index.ts",
+    "build:binary:darwin-x64": "bun build --compile --target=bun-darwin-x64 --minify --sourcemap=none --outfile=jira-cli-mcp-darwin-x64 src/index.ts",
+    "build:binary:linux-x64": "bun build --compile --target=bun-linux-x64 --minify --sourcemap=none --outfile=jira-cli-mcp-linux-x64 src/index.ts",
+    "build:binary:linux-arm64": "bun build --compile --target=bun-linux-arm64 --minify --sourcemap=none --outfile=jira-cli-mcp-linux-arm64 src/index.ts",
+    "build:binaries": "bun run build:binary:darwin-arm64 && bun run build:binary:darwin-x64 && bun run build:binary:linux-x64 && bun run build:binary:linux-arm64",
     "test": "bun test tests/",
     "test:integration": "INTEGRATION_TEST=true bun test tests/integration/",
     "typecheck": "tsc --noEmit",

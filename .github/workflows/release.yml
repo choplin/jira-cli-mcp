@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-binaries:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: darwin-arm64
+            name: jira-cli-mcp-darwin-arm64
+          - os: macos-latest
+            target: darwin-x64
+            name: jira-cli-mcp-darwin-x64
+          - os: ubuntu-latest
+            target: linux-x64
+            name: jira-cli-mcp-linux-x64
+          - os: ubuntu-latest
+            target: linux-arm64
+            name: jira-cli-mcp-linux-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build binary
+        run: bun build --compile --target=bun-${{ matrix.target }} --minify --sourcemap=none --outfile=${{ matrix.name }} src/index.ts
+
+      - name: Compress binary
+        run: |
+          tar -czf ${{ matrix.name }}.tar.gz ${{ matrix.name }}
+          ls -lh ${{ matrix.name }}*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.name }}.tar.gz
+
+  create-release:
+    needs: build-binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for file in artifacts/*/*.tar.gz; do
+            asset_name=$(basename "$file")
+            echo "Uploading $asset_name"
+            gh release upload ${{ github.ref_name }} "$file" --clobber
+          done
+
+  publish-npm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build for npm
+        run: bun run build:prod
+
+      - name: Update shebang for Node.js
+        run: |
+          echo '#!/usr/bin/env node' > dist/index.js.tmp
+          cat dist/index.js >> dist/index.js.tmp
+          mv dist/index.js.tmp dist/index.js
+          chmod +x dist/index.js
+
+      - name: Test npm package
+        run: |
+          npm pack
+          ls -lh *.tgz
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

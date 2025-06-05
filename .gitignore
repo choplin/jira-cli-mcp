@@ -6,6 +6,10 @@ out
 dist
 *.tgz
 
+# compiled binaries
+jira-cli-mcp-*
+!jira-cli-mcp-*.tar.gz
+
 # code coverage
 coverage
 *.lcov

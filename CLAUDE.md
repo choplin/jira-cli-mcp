@@ -97,7 +97,14 @@ Add to `claude_desktop_config.json`:
 
 ## Recent Changes
 
-### v0.2.0 (Current)
+### v0.2.1 (Current)
+
+- Fixed JQL ORDER BY error by implementing workaround for jira-cli bug (#11)
+  - Removed ORDER BY clause from JQL generation
+  - Added ordering via `--order-by` and `--reverse` flags instead
+  - Added comprehensive tests for ordering behavior
+
+### v0.2.0
 
 - Added `open_ticket_in_browser` tool - Opens Jira tickets in the default web browser
 - Added Homebrew distribution support with automatic tap updates

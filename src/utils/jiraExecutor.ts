@@ -30,7 +30,10 @@ export async function executeJiraCommand(
 
     // Write input to stdin if provided
     if (input) {
-      proc.stdin.write(input);
+      proc.stdin.on("error", (err) => {
+        console.error("Error writing to stdin:", err);
+      });
+      proc.stdin.write(input, "utf-8");
       proc.stdin.end();
     }
 

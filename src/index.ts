@@ -8,6 +8,10 @@ import { getTicket, getTicketSchema } from "./tools/getTicket.js";
 import { listTickets, listTicketsSchema } from "./tools/listTickets.js";
 import { moveTicket, moveTicketSchema } from "./tools/moveTicket.js";
 import {
+  openTicketInBrowser,
+  openTicketInBrowserSchema,
+} from "./tools/openTicketInBrowser.js";
+import {
   updateTicketDescription,
   updateTicketDescriptionSchema,
 } from "./tools/updateTicketDescription.js";
@@ -223,6 +227,38 @@ server.tool("move_ticket", moveTicketSchema.shape, async (params) => {
     throw error;
   }
 });
+
+// Open ticket in browser tool
+server.tool(
+  "open_ticket_in_browser",
+  openTicketInBrowserSchema.shape,
+  async (params) => {
+    try {
+      const result = await openTicketInBrowser(params);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: result.message,
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
+    }
+  },
+);
 
 async function main() {
   const transport = new StdioServerTransport();

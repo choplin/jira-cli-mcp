@@ -31,6 +31,9 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 6. **move_ticket** - Move tickets between statuses
    - Maps lowercase status names to Jira status names
 
+7. **open_ticket_in_browser** - Open tickets in default web browser
+   - Uses `jira open` command to launch browser
+
 ## Technical Details
 
 - **Runtime**: Bun

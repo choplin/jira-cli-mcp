@@ -43,24 +43,18 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
    jira init
    ```
 
-2. Install [Bun](https://bun.sh) runtime:
+2. Install jira-cli-mcp:
    ```bash
-   curl -fsSL https://bun.sh/install | bash
+   brew tap choplin/jira-cli-mcp
+   brew install jira-cli-mcp
    ```
 
-3. Clone and install this MCP server:
-   ```bash
-   git clone https://github.com/choplin/jira-cli-mcp.git
-   cd jira-cli-mcp
-   bun install
-   ```
-
-4. Add to Claude Desktop config (see [Setup](#setup-for-claude-desktop) below)
+3. Add to Claude Desktop config (see [Setup](#setup-for-claude-desktop) below)
 
 ## Prerequisites
 
 - [jira-cli](https://github.com/ankitpokhrel/jira-cli) installed and authenticated
-- [Bun](https://bun.sh) runtime
+- [Bun](https://bun.sh) runtime (only needed for development or if installing from source)
 
 ## Installation
 
@@ -108,7 +102,21 @@ bun run build:prod
 
 ## Setup for Claude Desktop
 
-### Option 1: Using npm Package (Lightest Option)
+### Option 1: Using Homebrew Installation (Recommended)
+
+If you installed via Homebrew (as shown in Quick Start), add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "jira-cli": {
+      "command": "jira-cli-mcp"
+    }
+  }
+}
+```
+
+### Option 2: Using npm Package
 
 Add to your `claude_desktop_config.json`:
 
@@ -135,7 +143,7 @@ Or if installed globally:
 }
 ```
 
-### Option 2: Using Pre-compiled Binary (No Dependencies)
+### Option 3: Using Pre-compiled Binary (No Dependencies)
 
 1. Download the binary for your platform from [releases](https://github.com/choplin/jira-cli-mcp/releases)
 2. Extract and move to your PATH:
@@ -157,7 +165,7 @@ sudo mv jira-cli-mcp-darwin-arm64 /usr/local/bin/jira-cli-mcp
 }
 ```
 
-### Option 3: Build from Source
+### Option 4: Build from Source
 
 1. Clone and run directly:
 

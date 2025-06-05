@@ -1,51 +1,49 @@
-# Setting up Homebrew Tap for jira-cli-mcp
+# Homebrew Tap Setup for jira-cli-mcp
 
-This guide explains how to set up a Homebrew tap for distributing jira-cli-mcp.
+This document explains the Homebrew distribution setup using a separate tap repository.
 
-## Prerequisites
+## Architecture
 
-- A GitHub account
-- A macOS machine for testing
+We use two repositories:
+1. **Main repository** (`jira-cli-mcp`) - Contains source code and release automation
+2. **Tap repository** (`homebrew-jira-cli-mcp`) - Contains only the Homebrew formula
 
-## Steps
+## How It Works
 
-### 1. Create a new repository for your tap
+1. When a new release is tagged in the main repository:
+   - GitHub Actions builds binaries for all platforms
+   - Calculates SHA256 checksums
+   - Sends a `repository_dispatch` event to the tap repository
 
-Create a new repository named `homebrew-jira-cli-mcp` on GitHub. Homebrew taps must follow the naming convention `homebrew-*`.
+2. The tap repository receives the event and:
+   - Updates the formula with new version and checksums
+   - Creates a pull request for review
+   - Once merged, users can install the new version
 
-### 2. Add the formula
+## Setting Up the Tap Repository
 
-Copy the `homebrew/jira-cli-mcp.rb` file from this repository to your tap repository.
+1. Create a new repository named `homebrew-jira-cli-mcp` on GitHub
 
-### 3. Test the formula locally
+2. Copy the contents of `homebrew-jira-cli-mcp/` directory:
+   ```bash
+   cp -r homebrew-jira-cli-mcp/* /path/to/new/repo/
+   cd /path/to/new/repo
+   git add .
+   git commit -m "Initial tap setup"
+   git push origin main
+   ```
 
+3. Create a Personal Access Token:
+   - Go to GitHub Settings → Developer Settings → Personal Access Tokens
+   - Create a token with `repo` scope
+   - Add it as `TAP_GITHUB_TOKEN` secret in the main repository
+
+## Manual Updates
+
+If automatic updates fail, use the manual script:
 ```bash
-# Clone your tap
-git clone https://github.com/choplin/homebrew-jira-cli-mcp.git
-cd homebrew-jira-cli-mcp
-
-# Test the formula
-brew install --build-from-source ./jira-cli-mcp.rb
-```
-
-### 4. Publish your tap
-
-Push the formula to your GitHub repository:
-
-```bash
-git add jira-cli-mcp.rb
-git commit -m "Add jira-cli-mcp formula"
-git push origin main
-```
-
-### 5. Users can now install via Homebrew
-
-```bash
-# Add your tap
-brew tap choplin/jira-cli-mcp
-
-# Install the formula
-brew install jira-cli-mcp
+./scripts/update-homebrew-formula.sh 0.1.0
+# Then manually copy the updated formula to the tap repository
 ```
 
 ## Automation

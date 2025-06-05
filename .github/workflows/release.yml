@@ -127,14 +127,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  update-homebrew-tap:
+  notify-homebrew-tap:
     needs: create-release
     runs-on: ubuntu-latest
     if: "!contains(github.ref, '-')"  # Only for stable releases
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -148,29 +146,17 @@ jobs:
           echo "linux_arm64=$(cat artifacts/jira-cli-mcp-linux-arm64/jira-cli-mcp-linux-arm64.tar.gz.sha256 | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "linux_x64=$(cat artifacts/jira-cli-mcp-linux-x64/jira-cli-mcp-linux-x64.tar.gz.sha256 | awk '{print $1}')" >> $GITHUB_OUTPUT
 
-      - name: Update Homebrew formula
-        run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
-          sed -i "s/version \".*\"/version \"$VERSION\"/" homebrew/jira-cli-mcp.rb
-          sed -i "s|download/v[0-9.]*|download/v$VERSION|g" homebrew/jira-cli-mcp.rb
-          sed -i "s/PLACEHOLDER_SHA256_DARWIN_ARM64/${{ steps.sha256.outputs.darwin_arm64 }}/" homebrew/jira-cli-mcp.rb
-          sed -i "s/PLACEHOLDER_SHA256_DARWIN_X64/${{ steps.sha256.outputs.darwin_x64 }}/" homebrew/jira-cli-mcp.rb
-          sed -i "s/PLACEHOLDER_SHA256_LINUX_ARM64/${{ steps.sha256.outputs.linux_arm64 }}/" homebrew/jira-cli-mcp.rb
-          sed -i "s/PLACEHOLDER_SHA256_LINUX_X64/${{ steps.sha256.outputs.linux_x64 }}/" homebrew/jira-cli-mcp.rb
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      - name: Trigger tap update
+        uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update Homebrew formula to v${{ github.ref_name }}"
-          title: "Update Homebrew formula to ${{ github.ref_name }}"
-          body: |
-            Automated update of Homebrew formula for release ${{ github.ref_name }}
-            
-            SHA256 checksums:
-            - darwin-arm64: ${{ steps.sha256.outputs.darwin_arm64 }}
-            - darwin-x64: ${{ steps.sha256.outputs.darwin_x64 }}
-            - linux-arm64: ${{ steps.sha256.outputs.linux_arm64 }}
-            - linux-x64: ${{ steps.sha256.outputs.linux_x64 }}
-          branch: update-homebrew-${{ github.ref_name }}
-          delete-branch: true
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+          repository: choplin/homebrew-jira-cli-mcp
+          event-type: formula-update
+          client-payload: |
+            {
+              "version": "${{ github.ref_name }}",
+              "sha256_darwin_arm64": "${{ steps.sha256.outputs.darwin_arm64 }}",
+              "sha256_darwin_x64": "${{ steps.sha256.outputs.darwin_x64 }}",
+              "sha256_linux_arm64": "${{ steps.sha256.outputs.linux_arm64 }}",
+              "sha256_linux_x64": "${{ steps.sha256.outputs.linux_x64 }}"
+            }

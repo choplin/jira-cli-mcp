@@ -23,47 +23,70 @@ const server = new McpServer({
 });
 
 // List tickets tool
-server.tool("list_tickets", listTicketsSchema.shape, async (params) => {
-  try {
-    const result = await listTickets(params);
-    const ticketList = result.tickets
-      .map(
-        (t) =>
-          `${t.key}: ${t.summary}\n  Status: ${t.status} | Priority: ${t.priority} | Type: ${t.type}${
-            t.assignee ? ` | Assignee: ${t.assignee}` : ""
-          }`,
-      )
-      .join("\n\n");
+server.tool(
+  "list_tickets",
+  "Search and list Jira tickets with filters",
+  listTicketsSchema.shape,
+  {
+    title: "List Jira Tickets",
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const result = await listTickets(params);
+      const ticketList = result.tickets
+        .map(
+          (t) =>
+            `${t.key}: ${t.summary}\n  Status: ${t.status} | Priority: ${t.priority} | Type: ${t.type}${
+              t.assignee ? ` | Assignee: ${t.assignee}` : ""
+            }`,
+        )
+        .join("\n\n");
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: ticketList || "No tickets found.",
-        },
-      ],
-    };
-  } catch (error) {
-    if (error instanceof JiraCliError) {
       return {
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            text: ticketList || "No tickets found.",
           },
         ],
       };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
     }
-    throw error;
-  }
-});
+  },
+);
 
 // Get ticket details tool
-server.tool("get_ticket", getTicketSchema.shape, async (params) => {
-  try {
-    const ticket = await getTicket(params);
+server.tool(
+  "get_ticket",
+  "Get detailed information about a specific Jira ticket",
+  getTicketSchema.shape,
+  {
+    title: "Get Jira Ticket Details",
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const ticket = await getTicket(params);
 
-    const ticketInfo = `**${ticket.key}: ${ticket.summary}**
+      const ticketInfo = `**${ticket.key}: ${ticket.summary}**
 
 **Details:**
 - Status: ${ticket.status}
@@ -89,33 +112,42 @@ ${
     : "No comments"
 }`;
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: ticketInfo,
-        },
-      ],
-    };
-  } catch (error) {
-    if (error instanceof JiraCliError) {
       return {
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            text: ticketInfo,
           },
         ],
       };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
     }
-    throw error;
-  }
-});
+  },
+);
 
 // Update ticket description tool
 server.tool(
   "update_ticket_description",
+  "Update the description of a Jira ticket",
   updateTicketDescriptionSchema.shape,
+  {
+    title: "Update Ticket Description",
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
   async (params) => {
     try {
       const result = await updateTicketDescription(params);
@@ -145,93 +177,137 @@ server.tool(
 );
 
 // Add comment tool
-server.tool("add_comment", addCommentSchema.shape, async (params) => {
-  try {
-    const result = await addComment(params);
+server.tool(
+  "add_comment",
+  "Add a comment to a Jira ticket",
+  addCommentSchema.shape,
+  {
+    title: "Add Comment to Ticket",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const result = await addComment(params);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: result.message,
-        },
-      ],
-    };
-  } catch (error) {
-    if (error instanceof JiraCliError) {
       return {
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            text: result.message,
           },
         ],
       };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
     }
-    throw error;
-  }
-});
+  },
+);
 
 // Assign to me tool
-server.tool("assign_to_me", assignToMeSchema.shape, async (params) => {
-  try {
-    const result = await assignToMe(params);
+server.tool(
+  "assign_to_me",
+  "Assign a Jira ticket to the current user",
+  assignToMeSchema.shape,
+  {
+    title: "Assign Ticket to Me",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const result = await assignToMe(params);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: result.message,
-        },
-      ],
-    };
-  } catch (error) {
-    if (error instanceof JiraCliError) {
       return {
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            text: result.message,
           },
         ],
       };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
     }
-    throw error;
-  }
-});
+  },
+);
 
 // Move ticket tool
-server.tool("move_ticket", moveTicketSchema.shape, async (params) => {
-  try {
-    const result = await moveTicket(params);
+server.tool(
+  "move_ticket",
+  "Move a Jira ticket to a different status",
+  moveTicketSchema.shape,
+  {
+    title: "Move Ticket Status",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const result = await moveTicket(params);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: result.message,
-        },
-      ],
-    };
-  } catch (error) {
-    if (error instanceof JiraCliError) {
       return {
         content: [
           {
             type: "text",
-            text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            text: result.message,
           },
         ],
       };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
     }
-    throw error;
-  }
-});
+  },
+);
 
 // Open ticket in browser tool
 server.tool(
   "open_ticket_in_browser",
+  "Open a Jira ticket in the default web browser",
   openTicketInBrowserSchema.shape,
+  {
+    title: "Open Ticket in Browser",
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   async (params) => {
     try {
       const result = await openTicketInBrowser(params);

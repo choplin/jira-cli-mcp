@@ -4,7 +4,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![MCP](https://img.shields.io/badge/MCP-1.0-green.svg)](https://modelcontextprotocol.io)
 
-MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact with Jira.
+MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact
+with Jira.
 
 ## Why jira-cli-mcp?
 
@@ -17,8 +18,9 @@ If you're looking for a Jira MCP server, here's what makes jira-cli-mcp unique:
 ### When to use mcp-atlassian instead?
 
 Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
+
 - Need **Confluence** support (we're Jira-only)
-- Prefer **Docker** deployment 
+- Prefer **Docker** deployment
 - Want a **self-contained** solution without CLI dependencies
 - Need **direct API** integration rather than CLI wrapping
 
@@ -35,6 +37,7 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
 ## Quick Start
 
 1. Install and configure [jira-cli](https://github.com/ankitpokhrel/jira-cli) ([Installation guide](https://github.com/ankitpokhrel/jira-cli/wiki/Installation)):
+
    ```bash
    # Install jira-cli (macOS)
    brew install ankitpokhrel/jira-cli/jira-cli
@@ -44,6 +47,7 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
    ```
 
 2. Install jira-cli-mcp:
+
    ```bash
    brew tap choplin/jira-cli-mcp
    brew install jira-cli-mcp
@@ -153,7 +157,7 @@ tar -xzf jira-cli-mcp-darwin-arm64.tar.gz
 sudo mv jira-cli-mcp-darwin-arm64 /usr/local/bin/jira-cli-mcp
 ```
 
-3. Add to config:
+1. Add to config:
 
 ```json
 {
@@ -175,7 +179,7 @@ cd jira-cli-mcp
 bun install
 ```
 
-2. Add to config:
+1. Add to config:
 
 ```json
 {
@@ -220,9 +224,10 @@ Claude Code has built-in support for MCP servers. To use jira-cli-mcp in your pr
 }
 ```
 
-3. Restart Claude Code and the MCP server will be automatically loaded
+1. Restart Claude Code and the MCP server will be automatically loaded
 
 You can then use Jira commands directly in your conversation, such as:
+
 - "List my open Jira tickets"
 - "Show me details for PROJ-123"
 - "Add a comment to PROJ-456"
@@ -245,9 +250,9 @@ GitHub Copilot supports MCP servers in Visual Studio Code (version 1.99+):
 }
 ```
 
-3. Open the `.vscode/mcp.json` file in VS Code and click the **[Start]** button to activate the server
+1. Open the `.vscode/mcp.json` file in VS Code and click the **[Start]** button to activate the server
 
-4. In Copilot Chat:
+2. In Copilot Chat:
    - Open Copilot Chat panel
    - Select "Agent" from the popup menu
    - Click the tools icon to see available MCP servers

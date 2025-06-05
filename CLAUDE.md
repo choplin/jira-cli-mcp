@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact with Jira.
+MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool to enable AI assistants to interact
+with Jira.
 
 ## Key Features
 
@@ -44,7 +45,7 @@ MCP (Model Context Protocol) server that wraps the `jira-cli` command-line tool 
 
 ## Project Structure
 
-```
+```text
 src/
 ├── index.ts          # MCP server entry point
 ├── config.ts         # Configuration management

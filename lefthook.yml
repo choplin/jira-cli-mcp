@@ -20,6 +20,11 @@ pre-commit:
       run: biome check --write {staged_files}
       stage_fixed: true
 
+    markdownlint:
+      glob: "**/*.md"
+      run: bunx markdownlint-cli2 --fix {staged_files}
+      stage_fixed: true
+
     typecheck:
       run: bun run typecheck
 

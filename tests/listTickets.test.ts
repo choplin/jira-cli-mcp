@@ -149,7 +149,12 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
         expect(jql).toContain("assignee = currentUser()");
         expect(jql).toContain('status = "In Review"');
         expect(jql).toContain("project = PROJ");
-        expect(jql).toContain("ORDER BY created DESC");
+
+        // Verify ordering is handled via flags, not JQL
+        expect(jql).not.toContain("ORDER BY");
+        const orderByIndex = args.indexOf("--order-by");
+        expect(orderByIndex).toBeGreaterThan(-1);
+        expect(args[orderByIndex + 1]).toBe("created");
 
         return {
           stdout: "",
@@ -199,6 +204,70 @@ ABC-12346	Fix memory leak in background processor	Open	Medium	Bug		John Smith`;
       await listTickets({
         createdRecently: true,
         updatedRecently: true,
+      });
+
+      expect(mockExecuteJiraCommand).toHaveBeenCalled();
+    });
+
+    test("should use --order-by flag instead of JQL ORDER BY", async () => {
+      const mockExecuteJiraCommand = mock(async (args: string[]) => {
+        // Verify that --order-by flag is used
+        const orderByIndex = args.indexOf("--order-by");
+        expect(orderByIndex).toBeGreaterThan(-1);
+        expect(args[orderByIndex + 1]).toBe("updated");
+
+        // Verify that JQL doesn't contain ORDER BY
+        const jqlIndex = args.indexOf("--jql");
+        if (jqlIndex > -1) {
+          const jql = args[jqlIndex + 1] as string;
+          expect(jql).not.toContain("ORDER BY");
+        }
+
+        // For DESC order, --reverse should NOT be present
+        expect(args).not.toContain("--reverse");
+
+        return {
+          stdout: "TEST-123\tTest Issue\tOpen\tHigh\tTask\tJohn Smith",
+          stderr: "",
+          exitCode: 0,
+        };
+      });
+
+      mock.module("../src/utils/jiraExecutor", () => ({
+        executeJiraCommand: mockExecuteJiraCommand,
+      }));
+
+      const { listTickets } = await import("../src/tools/listTickets");
+      const result = await listTickets({
+        assignedToMe: true,
+        orderBy: "updated",
+        orderDirection: "desc",
+      });
+
+      expect(result.tickets).toHaveLength(1);
+      expect(mockExecuteJiraCommand).toHaveBeenCalled();
+    });
+
+    test("should use --reverse flag for ascending order", async () => {
+      const mockExecuteJiraCommand = mock(async (args: string[]) => {
+        // Verify that --reverse flag is used for ASC
+        expect(args).toContain("--reverse");
+
+        return {
+          stdout: "TEST-123\tTest Issue\tOpen\tHigh\tTask\tJohn Smith",
+          stderr: "",
+          exitCode: 0,
+        };
+      });
+
+      mock.module("../src/utils/jiraExecutor", () => ({
+        executeJiraCommand: mockExecuteJiraCommand,
+      }));
+
+      const { listTickets } = await import("../src/tools/listTickets");
+      await listTickets({
+        orderBy: "created",
+        orderDirection: "asc",
       });
 
       expect(mockExecuteJiraCommand).toHaveBeenCalled();

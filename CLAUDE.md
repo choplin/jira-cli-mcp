@@ -97,7 +97,15 @@ Add to `claude_desktop_config.json`:
 
 ## Recent Changes
 
-### v0.3.0 (Current)
+### v0.4.0 (Current)
+
+- Added `create_ticket` tool - Create new Jira tickets with customizable fields
+  - Support for project, type, summary, description, priority, assignee, labels, and components
+  - Fixed description handling using `--template` flag for proper multi-line support
+- Added "canceled" status to JIRA_STATUS_VALUES and mappings
+  - Enables moveTicket tool to support canceled status transitions
+
+### v0.3.0
 
 - Changed license from Apache 2.0 to MIT
 - Added tool descriptions and annotations for better discoverability in MCP clients

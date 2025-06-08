@@ -26,6 +26,7 @@ Choose [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) if you:
 
 ## Features
 
+- **create_ticket** - Create new Jira tickets with customizable fields
 - **list_tickets** - Search and list Jira tickets using JQL queries
 - **get_ticket** - Get detailed ticket information including comments
 - **update_ticket_description** - Update ticket descriptions with rich text formatting

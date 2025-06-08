@@ -53,3 +53,21 @@ export interface CommandResult {
   stderr: string;
   exitCode: number;
 }
+
+export interface CreateTicketParams {
+  project: string;
+  type: string;
+  summary: string;
+  description?: string;
+  priority?: string;
+  assignee?: string;
+  labels?: string[];
+  components?: string[];
+}
+
+export interface CreateTicketResult {
+  success: boolean;
+  ticketKey?: string;
+  ticketUrl?: string;
+  error?: string;
+}

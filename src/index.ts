@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { addComment, addCommentSchema } from "./tools/addComment.js";
 import { assignToMe, assignToMeSchema } from "./tools/assignToMe.js";
+import { createTicket, createTicketSchema } from "./tools/createTicket.js";
 import { getTicket, getTicketSchema } from "./tools/getTicket.js";
 import { listTickets, listTicketsSchema } from "./tools/listTickets.js";
 import { moveTicket, moveTicketSchema } from "./tools/moveTicket.js";
@@ -315,6 +316,57 @@ server.tool(
           {
             type: "text",
             text: result.message,
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof JiraCliError) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${error.message}\n\nMake sure jira-cli is installed and authenticated.`,
+            },
+          ],
+        };
+      }
+      throw error;
+    }
+  },
+);
+
+// Create ticket tool
+server.tool(
+  "create_ticket",
+  "Create a new Jira ticket",
+  createTicketSchema.shape,
+  {
+    title: "Create Jira Ticket",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
+  async (params) => {
+    try {
+      const result = await createTicket(params);
+
+      if (!result.success) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Failed to create ticket: ${result.error}`,
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Successfully created ticket ${result.ticketKey}\nURL: ${result.ticketUrl}`,
           },
         ],
       };

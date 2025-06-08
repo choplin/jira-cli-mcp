@@ -1,6 +1,6 @@
 {
   "name": "@choplin/jira-cli-mcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "MCP server that wraps jira-cli for AI assistants",
   "license": "MIT",
   "author": "Akihiro Okuno",

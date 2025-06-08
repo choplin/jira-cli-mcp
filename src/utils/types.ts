@@ -5,6 +5,7 @@ export const JIRA_STATUS_VALUES = [
   "in review",
   "done",
   "closed",
+  "canceled",
   "todo",
   "to do",
 ] as const;
@@ -17,6 +18,7 @@ export const JIRA_STATUS_MAP: Record<JiraStatusValue, string> = {
   "in review": "In Review",
   done: "Done",
   closed: "Closed",
+  canceled: "Canceled",
   todo: "To Do",
   "to do": "To Do",
 };
